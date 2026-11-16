@@ -2,6 +2,10 @@
 
 A native Android task planner written in Java. It provides automatic task categories and priorities, configurable focus hours with suggestions learned from completed tasks, progress tracking, and scheduled reminders.
 
+## See a browser preview
+
+Open `preview.html` in a web browser. It works without Android Studio, a JDK, or an internet connection. The preview starts with sample tasks so you can see the screen right away; adding, completing, or deleting tasks updates the progress and saves changes in that browser. Browser reminders are shown as task details only; scheduled notifications are available in the Android app.
+
 ## Open and run
 
 1. Install Android Studio with JDK 17 and Android SDK Platform 35.

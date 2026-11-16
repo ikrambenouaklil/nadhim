@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7f4">
+  <title>Nadhim — Daily planner preview</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #25312d;
+      --muted: #707c76;
+      --green: #397b68;
+      --green-dark: #2d6655;
+      --page: #f5f7f4;
+      --line: #e7ede8;
+      --white: #fff;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
+      background: var(--page);
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      padding: 28px 16px;
+      background:
+        radial-gradient(ellipse at 50% 0, #e8f0ea 0, transparent 43rem),
+        var(--page);
+    }
+
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+
+    .phone {
+      width: min(100%, 430px);
+      min-height: calc(100vh - 56px);
+      margin: 0 auto;
+      padding: 32px 24px 36px;
+      border: 1px solid rgba(37, 49, 45, .06);
+      border-radius: 30px;
+      background: var(--page);
+      box-shadow: 0 24px 80px rgba(37, 49, 45, .11);
+    }
+
+    .brand {
+      margin: 0;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: .24em;
+    }
+
+    h1 {
+      margin: 14px 0 7px;
+      font-size: clamp(32px, 9vw, 39px);
+      line-height: 1.08;
+      letter-spacing: -.055em;
+    }
+
+    .date { margin: 0; color: var(--muted); font-size: 14px; }
+
+    .card {
+      border: 1px solid rgba(37, 49, 45, .035);
+      border-radius: 20px;
+      background: var(--white);
+      box-shadow: 0 5px 16px rgba(37, 49, 45, .035);
+    }
+
+    .summary { margin-top: 26px; padding: 19px 19px 16px; }
+    .eyebrow { margin: 0; color: var(--muted); font-size: 11px; font-weight: 750; letter-spacing: .12em; }
+    .summary-line { margin: 11px 0 13px; font-size: 17px; font-weight: 700; }
+    .progress-track { height: 7px; overflow: hidden; border-radius: 20px; background: var(--line); }
+    .progress-fill { width: 0; height: 100%; border-radius: inherit; background: var(--green); transition: width .2s ease; }
+    .progress-note { margin: 9px 0 0; color: var(--muted); font-size: 12px; }
+
+    .focus { margin-top: 15px; padding: 18px 19px 12px; }
+    .focus .eyebrow { color: var(--green); }
+    .focus-time { margin: 8px 0 7px; font-size: 17px; font-weight: 700; }
+    .focus-note { margin: 0 0 9px; color: var(--muted); font-size: 12px; }
+
+    .quiet-button {
+      min-height: 40px;
+      padding: 7px 10px;
+      border: 0;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 650;
+    }
+    .quiet-button:hover { background: #f0f5f1; }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 26px 0 12px;
+    }
+
+    h2 { margin: 0; font-size: 22px; letter-spacing: -.035em; }
+
+    .add-button, .save-button {
+      min-height: 42px;
+      padding: 0 15px;
+      border: 0;
+      border-radius: 13px;
+      background: var(--green);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      transition: background .15s, transform .15s;
+    }
+    .add-button:hover, .save-button:hover { background: var(--green-dark); }
+    .add-button:active, .save-button:active { transform: scale(.98); }
+
+    .task-list { display: grid; gap: 10px; }
+    .task {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 76px;
+      padding: 13px 14px;
+      border: 1px solid rgba(37, 49, 45, .035);
+      border-radius: 17px;
+      background: var(--white);
+      box-shadow: 0 4px 14px rgba(37, 49, 45, .03);
+    }
+
+    .task-check {
+      width: 21px;
+      height: 21px;
+      flex: 0 0 auto;
+      margin: 0;
+      accent-color: var(--green);
+      cursor: pointer;
+    }
+
+    .task-copy { min-width: 0; flex: 1; }
+    .task-title { overflow-wrap: anywhere; font-size: 14px; font-weight: 700; line-height: 1.4; }
+    .task.completed .task-title { color: #9aa59f; text-decoration: line-through; }
+    .task-meta { margin-top: 5px; color: var(--muted); font-size: 11px; line-height: 1.4; }
+
+    .priority {
+      flex: 0 0 auto;
+      padding: 5px 8px;
+      border-radius: 20px;
+      background: #f1f5f1;
+      color: #617169;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .priority.high { background: #fff0e8; color: #a64c27; }
+
+    .delete-button {
+      width: 32px;
+      height: 32px;
+      flex: 0 0 auto;
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      color: #9aa59f;
+      font-size: 19px;
+    }
+    .delete-button:hover { background: #f8eeeb; color: #a64c27; }
+
+    .empty {
+      padding: 23px 15px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    dialog {
+      width: min(calc(100% - 32px), 390px);
+      padding: 0;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      color: var(--ink);
+      box-shadow: 0 24px 80px rgba(27, 40, 34, .2);
+    }
+    dialog::backdrop { background: rgba(26, 39, 33, .38); backdrop-filter: blur(3px); }
+    .dialog-inner { padding: 23px; }
+    .dialog-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 19px; }
+    .dialog-head h2 { font-size: 21px; }
+    .close-button { width: 34px; height: 34px; border: 0; border-radius: 10px; background: var(--page); color: var(--muted); font-size: 20px; }
+    .field { display: grid; gap: 7px; margin-bottom: 15px; }
+    .field label { color: var(--muted); font-size: 12px; font-weight: 650; }
+    .field input, .field select {
+      width: 100%;
+      min-height: 45px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      outline: none;
+      background: #fff;
+      color: var(--ink);
+    }
+    .field input:focus, .field select:focus { border-color: var(--green); box-shadow: 0 0 0 3px #397b6818; }
+    .form-error { min-height: 18px; margin: -5px 0 8px; color: #a64c27; font-size: 12px; }
+    .save-button { width: 100%; }
+    .preview-note { margin: 19px 0 0; color: #929e97; font-size: 11px; line-height: 1.5; text-align: center; }
+
+    @media (max-width: 480px) {
+      body { padding: 0; background: var(--page); }
+      .phone { min-height: 100vh; padding: 30px 22px 34px; border: 0; border-radius: 0; box-shadow: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="phone">
+    <header>
+      <p class="brand">N A D H I M</p>
+      <h1>Make room for<br>what matters.</h1>
+      <p class="date" id="today"></p>
+    </header>
+
+    <section class="card summary" aria-labelledby="summary-heading">
+      <h2 class="eyebrow" id="summary-heading">YOUR DAY AT A GLANCE</h2>
+      <p class="summary-line" id="summary-line" aria-live="polite"></p>
+      <div class="progress-track" role="progressbar" aria-label="Today's task progress" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <p class="progress-note" id="progress-note"></p>
+    </section>
+
+    <section class="card focus" aria-labelledby="focus-heading">
+      <h2 class="eyebrow" id="focus-heading">A GOOD TIME TO FOCUS</h2>
+      <p class="focus-time" id="focus-time"></p>
+      <p class="focus-note" id="focus-note"></p>
+      <button class="quiet-button" id="availability-button" type="button">Set your available hours</button>
+    </section>
+
+    <section aria-labelledby="tasks-heading">
+      <div class="section-heading">
+        <h2 id="tasks-heading">Today's tasks</h2>
+        <button class="add-button" id="add-button" type="button">+ Add task</button>
+      </div>
+      <div class="task-list" id="task-list" aria-live="polite"></div>
+    </section>
+    <p class="preview-note">Interactive browser preview · Your changes stay in this browser.</p>
+  </main>
+
+  <dialog id="task-dialog">
+    <form class="dialog-inner" id="task-form">
+      <div class="dialog-head">
+        <h2>New task</h2>
+        <button class="close-button" id="close-task-dialog" type="button" aria-label="Close">×</button>
+      </div>
+      <div class="field">
+        <label for="task-title">What do you need to do?</label>
+        <input id="task-title" name="title" maxlength="120" autocomplete="off" placeholder="e.g. Finish project proposal" required>
+      </div>
+      <div class="field">
+        <label for="task-priority">Priority</label>
+        <select id="task-priority" name="priority">
+          <option value="Automatic">Automatic priority</option>
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="task-reminder">Reminder (optional)</label>
+        <input id="task-reminder" name="reminder" type="datetime-local">
+      </div>
+      <p class="form-error" id="form-error" role="alert"></p>
+      <button class="save-button" type="submit">Add task</button>
+    </form>
+  </dialog>
+
+  <dialog id="hours-dialog">
+    <form class="dialog-inner" id="hours-form">
+      <div class="dialog-head">
+        <h2>Your available hours</h2>
+        <button class="close-button" id="close-hours-dialog" type="button" aria-label="Close">×</button>
+      </div>
+      <div class="field">
+        <label for="start-hour">Start time</label>
+        <input id="start-hour" name="start" type="time" required>
+      </div>
+      <div class="field">
+        <label for="end-hour">End time</label>
+        <input id="end-hour" name="end" type="time" required>
+      </div>
+      <p class="form-error" id="hours-error" role="alert"></p>
+      <button class="save-button" type="submit">Save hours</button>
+    </form>
+  </dialog>
+
+  <script>
+    (() => {
+      const taskKey = "nadhim-preview-tasks";
+      const hoursKey = "nadhim-preview-hours";
+      const now = new Date();
+      const dateText = new Intl.DateTimeFormat(undefined, { weekday: "long", month: "long", day: "numeric" }).format(now);
+      document.getElementById("today").textContent = dateText;
+
+      const sampleTasks = [
+        { id: "sample-1", title: "Review project proposal", category: "Work", priority: "High", dueAt: todayAt(15, 0), completed: false, completedAt: 0 },
+        { id: "sample-2", title: "Take a walk and reset", category: "Health", priority: "Medium", dueAt: 0, completed: true, completedAt: todayAt(10, 0) },
+        { id: "sample-3", title: "Read a chapter", category: "Study", priority: "Medium", dueAt: 0, completed: false, completedAt: 0 }
+      ];
+
+      function todayAt(hour, minute) {
+        const date = new Date();
+        date.setHours(hour, minute, 0, 0);
+        return date.getTime();
+      }
+
+      function loadTasks() {
+        try {
+          const saved = localStorage.getItem(taskKey);
+          if (saved === null) return sampleTasks;
+          const parsed = JSON.parse(saved);
+          return Array.isArray(parsed) ? parsed.filter(task => task && typeof task.title === "string") : sampleTasks;
+        } catch {
+          return sampleTasks;
+        }
+      }
+
+      function loadHours() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(hoursKey) || '{"start":"09:00","end":"17:00"}');
+          return saved && typeof saved.start === "string" && typeof saved.end === "string"
+            ? saved
+            : { start: "09:00", end: "17:00" };
+        } catch {
+          return { start: "09:00", end: "17:00" };
+        }
+      }
+
+      let tasks = loadTasks();
+      let hours = loadHours();
+
+      function persistTasks() {
+        try {
+          localStorage.setItem(taskKey, JSON.stringify(tasks));
+        } catch {
+          document.getElementById("progress-note").textContent = "Storage is unavailable; changes may not be saved.";
+        }
+      }
+
+      function categorize(title) {
+        const value = title.toLowerCase();
+        if (["study", "read", "class", "homework", "exam", "learn"].some(word => value.includes(word))) return "Study";
+        if (["work", "meeting", "email", "report", "client", "project"].some(word => value.includes(word))) return "Work";
+        if (["run", "walk", "gym", "doctor", "health", "exercise", "meditate"].some(word => value.includes(word))) return "Health";
+        return "Personal";
+      }
+
+      function inferPriority(title, dueAt) {
+        const value = title.toLowerCase();
+        if (["urgent", "asap", "today", "deadline"].some(word => value.includes(word))) return "High";
+        if (dueAt && dueAt - Date.now() < 24 * 60 * 60 * 1000) return "High";
+        return "Medium";
+      }
+
+      function formatTime(hour) {
+        const date = new Date();
+        date.setHours(hour, 0, 0, 0);
+        return new Intl.DateTimeFormat(undefined, { hour: "numeric", minute: "2-digit" }).format(date);
+      }
+
+      function renderFocus() {
+        const [startHour] = hours.start.split(":").map(Number);
+        const [endHour] = hours.end.split(":").map(Number);
+        const completions = tasks
+          .filter(task => task.completed && task.completedAt)
+          .map(task => new Date(task.completedAt).getHours())
+          .filter(hour => hour >= startHour && hour < endHour);
+        const focusHour = completions.length
+          ? Math.round(completions.reduce((sum, hour) => sum + hour, 0) / completions.length)
+          : startHour + Math.max(0, endHour - startHour - 1) / 2;
+        const boundedHour = Math.min(focusHour, Math.max(startHour, endHour - 1));
+        document.getElementById("focus-time").textContent =
+          `${formatTime(boundedHour)}–${formatTime(Math.min(boundedHour + 1, endHour))}`;
+        document.getElementById("focus-note").textContent = completions.length
+          ? "Based on your completion routine"
+          : "A suggested hour within your availability";
+      }
+
+      function render() {
+        const list = document.getElementById("task-list");
+        list.replaceChildren();
+        const ordered = [...tasks].sort((a, b) => {
+          const rank = task => task.completed ? 0 : task.priority === "High" ? 3 : task.priority === "Low" ? 1 : 2;
+          return rank(b) - rank(a) || (a.dueAt || Number.MAX_SAFE_INTEGER) - (b.dueAt || Number.MAX_SAFE_INTEGER);
+        });
+        const complete = ordered.filter(task => task.completed).length;
+        const total = ordered.length;
+        const percent = total ? Math.round((complete / total) * 100) : 0;
+
+        document.getElementById("summary-line").textContent = total
+          ? `${complete} of ${total} tasks complete`
+          : "A fresh start. Add one small task.";
+        document.getElementById("progress-note").textContent = total
+          ? `${percent}% complete · ${total - complete} to go`
+          : "Your progress will show here";
+        document.getElementById("progress-fill").style.width = `${percent}%`;
+        document.querySelector(".progress-track").setAttribute("aria-valuenow", String(percent));
+        renderFocus();
+
+        if (!ordered.length) {
+          const empty = document.createElement("div");
+          empty.className = "card empty";
+          empty.textContent = "Nothing on your list yet. Add a task to get started.";
+          list.append(empty);
+          return;
+        }
+
+        const dateFormat = new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+        for (const task of ordered) {
+          const row = document.createElement("article");
+          row.className = `task${task.completed ? " completed" : ""}`;
+
+          const checkbox = document.createElement("input");
+          checkbox.className = "task-check";
+          checkbox.type = "checkbox";
+          checkbox.checked = Boolean(task.completed);
+          checkbox.setAttribute("aria-label", `Mark ${task.title} ${task.completed ? "incomplete" : "complete"}`);
+          checkbox.addEventListener("change", () => {
+            task.completed = checkbox.checked;
+            task.completedAt = task.completed ? Date.now() : 0;
+            persistTasks();
+            render();
+          });
+
+          const copy = document.createElement("div");
+          copy.className = "task-copy";
+          const title = document.createElement("div");
+          title.className = "task-title";
+          title.textContent = task.title;
+          const meta = document.createElement("div");
+          meta.className = "task-meta";
+          meta.textContent = `${task.category || "Personal"} · ${task.priority || "Medium"}${task.dueAt ? ` · ${dateFormat.format(task.dueAt)}` : ""}`;
+          copy.append(title, meta);
+
+          const priority = document.createElement("span");
+          priority.className = `priority${task.priority === "High" ? " high" : ""}`;
+          priority.textContent = task.priority || "Medium";
+
+          const remove = document.createElement("button");
+          remove.className = "delete-button";
+          remove.type = "button";
+          remove.textContent = "×";
+          remove.setAttribute("aria-label", `Delete ${task.title}`);
+          remove.addEventListener("click", () => {
+            tasks = tasks.filter(item => item.id !== task.id);
+            persistTasks();
+            render();
+          });
+          row.append(checkbox, copy, priority, remove);
+          list.append(row);
+        }
+      }
+
+      const taskDialog = document.getElementById("task-dialog");
+      const taskForm = document.getElementById("task-form");
+      document.getElementById("add-button").addEventListener("click", () => {
+        document.getElementById("form-error").textContent = "";
+        taskForm.reset();
+        taskDialog.showModal();
+        document.getElementById("task-title").focus();
+      });
+      document.getElementById("close-task-dialog").addEventListener("click", () => taskDialog.close());
+      taskForm.addEventListener("submit", event => {
+        event.preventDefault();
+        const title = document.getElementById("task-title").value.trim();
+        const reminderValue = document.getElementById("task-reminder").value;
+        const dueAt = reminderValue ? new Date(reminderValue).getTime() : 0;
+        if (!title) {
+          document.getElementById("form-error").textContent = "Enter a task to continue.";
+          return;
+        }
+        if (dueAt && dueAt <= Date.now()) {
+          document.getElementById("form-error").textContent = "Choose a reminder time in the future.";
+          return;
+        }
+        const selectedPriority = document.getElementById("task-priority").value;
+        tasks.push({
+          id: window.crypto && crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random(),
+          title,
+          category: categorize(title),
+          priority: selectedPriority === "Automatic" ? inferPriority(title, dueAt) : selectedPriority,
+          dueAt,
+          completed: false,
+          completedAt: 0
+        });
+        persistTasks();
+        render();
+        taskDialog.close();
+      });
+      taskDialog.addEventListener("click", event => {
+        if (event.target === taskDialog) taskDialog.close();
+      });
+
+      const hoursDialog = document.getElementById("hours-dialog");
+      const hoursForm = document.getElementById("hours-form");
+      document.getElementById("availability-button").addEventListener("click", () => {
+        document.getElementById("start-hour").value = hours.start;
+        document.getElementById("end-hour").value = hours.end;
+        document.getElementById("hours-error").textContent = "";
+        hoursDialog.showModal();
+      });
+      document.getElementById("close-hours-dialog").addEventListener("click", () => hoursDialog.close());
+      hoursForm.addEventListener("submit", event => {
+        event.preventDefault();
+        const start = document.getElementById("start-hour").value;
+        const end = document.getElementById("end-hour").value;
+        if (!start || !end || end <= start) {
+          document.getElementById("hours-error").textContent = "Choose an end time after your start time.";
+          return;
+        }
+        hours = { start, end };
+        try {
+          localStorage.setItem(hoursKey, JSON.stringify(hours));
+        } catch {
+          document.getElementById("hours-error").textContent = "Browser storage is unavailable; these hours may not be saved.";
+          return;
+        }
+        renderFocus();
+        hoursDialog.close();
+      });
+      hoursDialog.addEventListener("click", event => {
+        if (event.target === hoursDialog) hoursDialog.close();
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>
