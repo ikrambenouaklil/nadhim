@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace "com.nadhim.planner"
+    namespace "com.example.myapplication"
     compileSdk 35
 
     defaultConfig {
-        applicationId "com.nadhim.planner"
+        applicationId "com.example.myapplication"
         minSdk 23
         targetSdk 34
         versionCode 1
