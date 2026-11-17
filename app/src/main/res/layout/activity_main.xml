@@ -99,7 +99,7 @@
                     android:fontFamily="@font/poppins_bold"
                     android:gravity="center"
                     android:includeFontPadding="false"
-                    android:text="@string/user_initial"
+                    android:text=""
                     android:textColor="@color/white"
                     android:textSize="14sp" />
             </RelativeLayout>
@@ -374,7 +374,8 @@
         <LinearLayout
             android:id="@+id/nav_today"
             style="@style/NavItem"
-            android:background="@drawable/bg_nav_active">
+            android:background="@drawable/bg_nav_active"
+            android:contentDescription="@string/nav_today">
 
             <TextView
                 style="@style/Text.NavIcon"
@@ -393,7 +394,8 @@
 
         <LinearLayout
             android:id="@+id/nav_calendar"
-            style="@style/NavItem">
+            style="@style/NavItem"
+            android:contentDescription="@string/nav_calendar">
 
             <TextView
                 style="@style/Text.NavIcon"
@@ -410,7 +412,8 @@
 
         <LinearLayout
             android:id="@+id/nav_add"
-            style="@style/NavItem">
+            style="@style/NavItem"
+            android:contentDescription="@string/nav_add">
 
             <TextView
                 style="@style/Text.NavIcon"
@@ -427,7 +430,8 @@
 
         <LinearLayout
             android:id="@+id/nav_insights"
-            style="@style/NavItem">
+            style="@style/NavItem"
+            android:contentDescription="@string/nav_insights">
 
             <TextView
                 style="@style/Text.NavIcon"

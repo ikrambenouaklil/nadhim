@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- All the colors used by the app, taken from the Figma design.
-     Giving each color a name (instead of writing "#0051FF" everywhere) means
-     that if a color changes, you only have to update it here. -->
+
 <resources>
     <!-- Brand blues -->
     <color name="brand_blue">#0051FF</color>

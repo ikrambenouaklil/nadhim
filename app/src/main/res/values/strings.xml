@@ -7,10 +7,15 @@
 
     <!-- Header -->
     <string name="tagline">SMART  ·  ORGANIZATION  ·  PRODUCTIVITY</string>
-    <string name="user_name">Sara</string>
-    <string name="user_initial">S</string>
     <string name="logo_description">Nadhim</string>
     <string name="profile_description">Profile</string>
+
+    <!-- Welcome screen (shown only the first time) -->
+    <string name="welcome_title">Welcome to Nadhim 👋</string>
+    <string name="welcome_subtitle">What should we call you?</string>
+    <string name="name_hint">Your name</string>
+    <string name="welcome_continue">Continue</string>
+    <string name="name_required">Please enter your name</string>
 
     <!-- Greeting. %1$s is replaced by the user name from the Java code. -->
     <string name="greeting_morning">Good morning, %1$s 👋</string>
@@ -51,4 +56,5 @@
     <string name="nav_insights_icon">◔</string>
     <string name="nav_insights">Insights</string>
     <string name="coming_soon">%1$s screen coming soon</string>
+    <string name="already_on_today">You are on the Today screen</string>
 </resources>
