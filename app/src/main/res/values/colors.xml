@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- All the colors used by the app, taken from the Figma design.
+     Giving each color a name (instead of writing "#0051FF" everywhere) means
+     that if a color changes, you only have to update it here. -->
+<resources>
+    <!-- Brand blues -->
+    <color name="brand_blue">#0051FF</color>
+    <color name="brand_blue_light">#719EFF</color>
+    <color name="brand_blue_mid">#3977FF</color>
+    <color name="progress_track">#315FFF</color>
+
+    <!-- Accent green (progress bar fill, "LOW" badge) -->
+    <color name="accent_green">#9DFF00</color>
+
+    <!-- Backgrounds -->
+    <color name="screen_background">#FAFFFE</color>
+    <color name="card_background">#FFFFFF</color>
+    <color name="check_background">#F7FFFE</color>
+    <color name="suggestion_background">#F2F5FF</color>
+    <color name="nav_active_background">#EAF0FF</color>
+
+    <!-- Lines and borders -->
+    <color name="border">#DAD9FB</color>
+
+    <!-- Text -->
+    <color name="text_primary">#17161B</color>
+    <color name="text_secondary">#667085</color>
+    <color name="text_on_badge">#EAF0FF</color>
+    <color name="white">#FFFFFF</color>
+</resources>

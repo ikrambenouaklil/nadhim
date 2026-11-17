@@ -1,3 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="AppTheme" parent="android:style/Theme.Material.Light.NoActionBar" />
+    <!-- The app theme (applied in AndroidManifest.xml).
+         - windowBackground: the light background color behind every screen.
+         - statusBarColor + windowLightStatusBar: the phone's top bar (clock,
+           battery) uses our background color, with dark icons on it. -->
+    <style name="AppTheme" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/screen_background</item>
+        <item name="android:statusBarColor">@color/screen_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">@color/screen_background</item>
+    </style>
+
+    <!-- Reusable text styles. Instead of repeating the font, size and color
+         on every TextView, a TextView just says style="@style/Text.TaskTitle".
+         "Text.TaskTitle" inherits everything from "Text" and changes a few things. -->
+    <style name="Text">
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <!-- Task title inside a priority card -->
+    <style name="Text.TaskTitle">
+        <item name="android:fontFamily">@font/poppins_semibold</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <!-- Small grey text under a task title -->
+    <style name="Text.TaskTime">
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">9sp</item>
+        <item name="android:layout_marginTop">6dp</item>
+    </style>
+
+    <!-- The colored pills "HIGH", "MED", "LOW" -->
+    <style name="Text.Badge">
+        <item name="android:layout_width">62dp</item>
+        <item name="android:layout_height">27dp</item>
+        <item name="android:fontFamily">@font/poppins_bold</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">@color/text_on_badge</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <!-- One white task card in "Your priorities" -->
+    <style name="TaskCard">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">68dp</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:background">@drawable/bg_card</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">14dp</item>
+        <item name="android:paddingEnd">22dp</item>
+    </style>
+
+    <!-- The round tick box on the left of a task card.
+         android:button replaces the default square box with our circles. -->
+    <style name="TaskCheck">
+        <item name="android:layout_width">20dp</item>
+        <item name="android:layout_height">20dp</item>
+        <item name="android:layout_marginEnd">12dp</item>
+        <item name="android:button">@drawable/task_check</item>
+        <item name="android:background">@null</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+    </style>
+
+    <!-- One button of the bottom navigation bar (icon on top, label below) -->
+    <style name="NavItem">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">44dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="Text.NavIcon">
+        <item name="android:fontFamily">@font/poppins_bold</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="Text.NavLabel">
+        <item name="android:fontFamily">@font/poppins_semibold</item>
+        <item name="android:textSize">9sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_marginTop">2dp</item>
+    </style>
 </resources>

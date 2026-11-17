@@ -1,3 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- All the text shown on screen. Keeping text here (instead of typing it
+     directly in the layout) makes it easy to translate the app later,
+     for example by adding a values-fr/strings.xml file. -->
 <resources>
     <string name="app_name">Nadhim</string>
+
+    <!-- Header -->
+    <string name="tagline">SMART  ·  ORGANIZATION  ·  PRODUCTIVITY</string>
+    <string name="user_name">Sara</string>
+    <string name="user_initial">S</string>
+    <string name="logo_description">Nadhim</string>
+    <string name="profile_description">Profile</string>
+
+    <!-- Greeting. %1$s is replaced by the user name from the Java code. -->
+    <string name="greeting_morning">Good morning, %1$s 👋</string>
+    <string name="greeting_afternoon">Good afternoon, %1$s 👋</string>
+    <string name="greeting_evening">Good evening, %1$s 👋</string>
+    <!-- %1$s is replaced by the date, for example "Monday, November 16" -->
+    <string name="date_subtitle">%1$s · Your day at a glance</string>
+
+    <!-- Daily progress card. %1$d and %2$d are numbers filled in from Java. -->
+    <string name="daily_progress">Daily progress</string>
+    <string name="tasks_completed">%1$d of %2$d tasks completed</string>
+    <string name="percent">%1$d%%</string>
+
+    <!-- Priorities -->
+    <string name="your_priorities">Your priorities</string>
+    <string name="task1_title">Finish project proposal</string>
+    <string name="task1_time">10:00 – 11:30</string>
+    <string name="task2_title">Review lecture notes</string>
+    <string name="task2_time">13:00 – 14:00</string>
+    <string name="task3_title">Plan weekly meals</string>
+    <string name="task3_time">17:00 – 17:30</string>
+    <string name="priority_high">HIGH</string>
+    <string name="priority_med">MED</string>
+    <string name="priority_low">LOW</string>
+
+    <!-- Nadhim suggestion card -->
+    <string name="suggestion_label">✦  NADHIM SUGGESTS</string>
+    <string name="suggestion_title">Take a 15-minute focus break</string>
+    <string name="suggestion_body">You’ve been working for 90 minutes. Recharge before your next task.</string>
+
+    <!-- Bottom navigation (the icons are text symbols, like in the Figma design) -->
+    <string name="nav_today_icon">⌂</string>
+    <string name="nav_today">Today</string>
+    <string name="nav_calendar_icon">▦</string>
+    <string name="nav_calendar">Calendar</string>
+    <string name="nav_add_icon">+</string>
+    <string name="nav_add">Add</string>
+    <string name="nav_insights_icon">◔</string>
+    <string name="nav_insights">Insights</string>
+    <string name="coming_soon">%1$s screen coming soon</string>
 </resources>

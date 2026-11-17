@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Filled blue circle with a white tick = task done.
+     The Figma design only shows the empty state, so this one is my addition. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="20dp"
+    android:height="20dp"
+    android:viewportWidth="20"
+    android:viewportHeight="20">
+    <!-- the blue circle -->
+    <path
+        android:fillColor="@color/brand_blue"
+        android:pathData="M10,0a10,10 0,1 1,0 20a10,10 0,1 1,0 -20z" />
+    <!-- the white tick -->
+    <path
+        android:strokeColor="@color/white"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M6,10.5l2.6,2.6l5.4,-5.6" />
+</vector>
