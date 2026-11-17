@@ -15,15 +15,13 @@ import java.util.Locale;
 
 /**
  * The first screen of the app: "Today".
- *
  * An Activity is one screen. Android creates it and calls onCreate() when the app opens.
  * The look of the screen is in res/layout/activity_main.xml. This class fills in the
  * parts that change (greeting, date, progress) and reacts when the user taps things.
  */
 public class MainActivity extends Activity {
 
-    // Sample numbers from the Figma design ("3 of 5 tasks completed").
-    // Later these will come from the user's real saved tasks.
+
     private static final int TASKS_DONE = 3;
     private static final int TASKS_TOTAL = 5;
 
@@ -122,6 +120,8 @@ public class MainActivity extends Activity {
         showComingSoonOnTap(R.id.nav_insights, R.string.nav_insights);
     }
 
+
+    // to delete later 
     private void showComingSoonOnTap(int tabId, int tabName) {
         findViewById(tabId).setOnClickListener(view ->
                 Toast.makeText(this,
