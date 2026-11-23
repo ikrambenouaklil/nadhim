@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.View;
@@ -159,18 +160,20 @@ public class MainActivity extends Activity {
             navToday.setOnClickListener(view ->
                     Toast.makeText(this, R.string.already_on_today, Toast.LENGTH_SHORT).show());
         }
-        showComingSoonOnTap(R.id.nav_calendar, R.string.nav_calendar);
-        showComingSoonOnTap(R.id.nav_add, R.string.nav_add);
-        showComingSoonOnTap(R.id.nav_insights, R.string.nav_insights);
-    }
-
-    private void showComingSoonOnTap(int tabId, int tabName) {
-        View tab = findViewById(tabId);
-        if (tab != null) {
-            tab.setOnClickListener(view ->
-                    Toast.makeText(this,
-                            getString(R.string.coming_soon, getString(tabName)),
-                            Toast.LENGTH_SHORT).show());
+        View navCalendar = findViewById(R.id.nav_calendar);
+        if (navCalendar != null) {
+            navCalendar.setOnClickListener(view ->
+                    startActivity(new Intent(this, com.example.myapplication.Calendar.class)));
+        }
+        View navAdd = findViewById(R.id.nav_add);
+        if (navAdd != null) {
+            navAdd.setOnClickListener(view ->
+                    startActivity(new Intent(this, AddTask.class)));
+        }
+        View navInsights = findViewById(R.id.nav_insights);
+        if (navInsights != null) {
+            navInsights.setOnClickListener(view ->
+                    startActivity(new Intent(this, Insights.class)));
         }
     }
 }
