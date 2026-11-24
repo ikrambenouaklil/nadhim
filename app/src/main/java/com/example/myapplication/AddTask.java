@@ -51,7 +51,7 @@ public class AddTask extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         contentView = inflater.inflate(R.layout.activity_add_task, container, false);
-        contentView.findViewById(R.id.legacy_bottom_navigation).setVisibility(View.GONE);
+
         bindViews();
         setupDeadline();
         setupDurationChips();

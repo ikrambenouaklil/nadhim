@@ -25,6 +25,10 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_host);
 
+        TextView avatar = findViewById(R.id.avatar);
+        String name = WelcomeActivity.getSavedName(this).trim();
+        avatar.setText(name.isEmpty() ? "" : name.substring(0, 1).toUpperCase(java.util.Locale.ENGLISH));
+
         findViewById(R.id.nav_today).setOnClickListener(view -> showTab(0));
         findViewById(R.id.nav_calendar).setOnClickListener(view -> showTab(1));
         findViewById(R.id.nav_add).setOnClickListener(view -> showTab(2));
@@ -107,7 +111,6 @@ public class MainActivity extends Activity {
                             : getColor(R.color.text_secondary));
                 }
             }
-
         }
     }
 }

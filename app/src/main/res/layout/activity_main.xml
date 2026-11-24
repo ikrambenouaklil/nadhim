@@ -3,26 +3,9 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/screen_background">
+>
 
-    <!-- ===== 1. DECORATIVE BACKGROUND ===== -->
-    <!-- Very faint grid lines covering the whole screen (Figma layer "grid").
-         importantForAccessibility="no" tells screen readers to skip it. -->
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:importantForAccessibility="no"
-        android:scaleType="fitXY"
-        android:src="@drawable/bg_grid" />
 
-    <!-- Soft blue glow at the top right (Figma layer "Star 1"). -->
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:importantForAccessibility="no"
-        android:scaleType="fitXY"
-        android:src="@drawable/bg_glow" />
 
     <!-- ===== 2. SCROLLABLE CONTENT ===== -->
     <!-- layout_marginBottom="69dp" (bar height 56 + gap 13) makes the scrolling
@@ -35,70 +18,12 @@
         android:paddingBottom="16dp"
         android:scrollbars="none">
 
-        <!-- A vertical LinearLayout places its children one under the other.
-             20dp on each side = the margins used in the Figma design. -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingStart="20dp"
-            android:paddingTop="16dp"
             android:paddingEnd="20dp">
-
-            <!-- ===== HEADER: logo, tagline and profile circle ===== -->
-            <!-- RelativeLayout positions children relative to each other
-                 (for example "below the logo" or "on the right edge"). -->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <!-- "Nadhim" logo (vector image converted from Figma). -->
-                <ImageView
-                    android:id="@+id/logo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginTop="1dp"
-                    android:contentDescription="@string/logo_description"
-                    android:src="@drawable/logo_nadhim" />
-
-                <!-- Small grey tagline under the logo. -->
-                <TextView
-                    style="@style/Text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/logo"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginTop="8dp"
-                    android:fontFamily="@font/poppins_semibold"
-                    android:text="@string/tagline"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="8sp" />
-
-                <!-- Profile circle with the user's initial, pinned to the right. -->
-                <TextView
-                    android:id="@+id/avatar"
-                    android:layout_width="34dp"
-                    android:layout_height="34dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginEnd="4dp"
-                    android:background="@drawable/bg_avatar"
-                    android:contentDescription="@string/profile_description"
-                    android:fontFamily="@font/poppins_bold"
-                    android:gravity="center"
-                    android:includeFontPadding="false"
-                    android:text=""
-                    android:textColor="@color/white"
-                    android:textSize="14sp" />
-            </RelativeLayout>
-
-            <!-- Thin horizontal line under the header. A plain View with a
-                 background color and 1dp height is the simplest divider. -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="9dp"
-                android:background="@color/border" />
 
             <!-- ===== GREETING ===== -->
             <!-- The text is set from MainActivity.java (it depends on the time of day). -->
@@ -341,6 +266,6 @@
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
-<!--  done -->
+
   
 </FrameLayout>

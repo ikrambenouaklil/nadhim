@@ -70,7 +70,6 @@ public class Calendar extends Fragment {
     private LinearLayout agendaContainer;
     private TextView calendarMonthText;
     private TextView agendaDateText;
-    private TextView eventCountBadge;
     private TextView dayTab;
     private TextView weekTab;
     private TextView monthTab;
@@ -83,7 +82,6 @@ public class Calendar extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         contentView = inflater.inflate(R.layout.activity_calendar, container, false);
-        contentView.findViewById(R.id.legacy_bottom_navigation).setVisibility(View.GONE);
         bindViews();
         loadEvents();
         attachListeners();
@@ -113,7 +111,6 @@ public class Calendar extends Fragment {
         agendaContainer = findViewById(R.id.agendaContainer);
         calendarMonthText = findViewById(R.id.calendarMonthText);
         agendaDateText = findViewById(R.id.agendaDateText);
-        eventCountBadge = findViewById(R.id.eventCountBadge);
         dayTab = findViewById(R.id.dayTab);
         weekTab = findViewById(R.id.weekTab);
         monthTab = findViewById(R.id.monthTab);
@@ -167,8 +164,7 @@ public class Calendar extends Fragment {
         }
 
         renderAgenda();
-        eventCountBadge.setText(String.valueOf(
-                eventsFor(dateKey(java.util.Calendar.getInstance())).size()));
+
     }
 
     private void styleTabs() {

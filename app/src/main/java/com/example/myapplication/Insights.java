@@ -47,7 +47,6 @@ public class Insights extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         contentView = inflater.inflate(R.layout.activity_insights, container, false);
-        contentView.findViewById(R.id.legacy_bottom_navigation).setVisibility(View.GONE);
         bindViews();
         renderStats();
         renderWeeklyChart();
