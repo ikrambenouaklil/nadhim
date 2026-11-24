@@ -1,14 +1,17 @@
 package com.example.myapplication;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.Fragment;
 import android.app.TimePickerDialog;
-import android.content.Intent;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,7 +23,7 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-public class AddTask extends Activity {
+public class AddTask extends Fragment {
 
     // ---- Thème Nadhim ----
     private static final int BLUE = Color.rgb(37, 99, 235);
@@ -32,6 +35,7 @@ public class AddTask extends Activity {
     private static final String PREFS = "nadhim_calendar";
     private static final String KEY_EVENTS = "events";
 
+    private View contentView;
     private EditText descriptionInput;
     private EditText detailsInput;
     private TextView deadlineText;
@@ -44,14 +48,15 @@ public class AddTask extends Activity {
     private int duration = 30; // minutes
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_task);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        contentView = inflater.inflate(R.layout.activity_add_task, container, false);
+
         bindViews();
         setupDeadline();
         setupDurationChips();
         setupAnalyzeButton();
-        setupNavigation();
+        return contentView;
     }
 
     private void bindViews() {
@@ -72,7 +77,7 @@ public class AddTask extends Activity {
     }
 
     private void pickDate() {
-        DatePickerDialog dialog = new DatePickerDialog(this, (view, year, month, day) -> {
+        DatePickerDialog dialog = new DatePickerDialog(getActivity(), (view, year, month, day) -> {
             deadline.set(year, month, day);
             pickTime();
         }, deadline.get(java.util.Calendar.YEAR),
@@ -83,7 +88,7 @@ public class AddTask extends Activity {
     }
 
     private void pickTime() {
-        new TimePickerDialog(this, (view, hour, minute) -> {
+        new TimePickerDialog(getActivity(), (view, hour, minute) -> {
             deadline.set(java.util.Calendar.HOUR_OF_DAY, hour);
             deadline.set(java.util.Calendar.MINUTE, minute);
             deadlineSet = true;
@@ -141,22 +146,23 @@ public class AddTask extends Activity {
                 return;
             }
             if (!deadlineSet) {
-                Toast.makeText(this, "Select a deadline first", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Select a deadline first", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (saveTask(title, detailsInput.getText().toString().trim())) {
-                Toast.makeText(this, "Task added to your calendar", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(this, Calendar.class));
-                finish();
+                Toast.makeText(getActivity(), "Task added to your calendar", Toast.LENGTH_SHORT).show();
+                ((MainActivity) getActivity()).showCalendarTab();
             }
         });
     }
 
     private boolean saveTask(String title, String notes) {
-        SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+        SharedPreferences prefs = getActivity().getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         try {
             JSONArray events = new JSONArray(prefs.getString(KEY_EVENTS, "[]"));
+        
             JSONObject task = new JSONObject();
+            
             task.put("id", System.currentTimeMillis());
             task.put("date", new SimpleDateFormat("yyyy-MM-dd", Locale.US)
                     .format(deadline.getTime()));
@@ -169,33 +175,16 @@ public class AddTask extends Activity {
             prefs.edit().putString(KEY_EVENTS, events.toString()).apply();
             return true;
         } catch (JSONException e) {
-            Toast.makeText(this, "Could not save the task", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Could not save the task", Toast.LENGTH_SHORT).show();
             return false;
         }
     }
 
-    // =====================================================================
-    // Navigation du bas (onglet actif : Add)
-    // =====================================================================
-
-    private void setupNavigation() {
-        TextView addNav = findViewById(R.id.addNavigation);
-        GradientDrawable pill = new GradientDrawable();
-        pill.setColor(BLUE_CHIP);
-        pill.setCornerRadius(dp(20));
-        addNav.setBackground(pill);
-        addNav.setTextColor(BLUE);
-        addNav.setTypeface(null, Typeface.BOLD);
-
-        findViewById(R.id.todayNavigation).setOnClickListener(v ->
-                startActivity(new Intent(this, MainActivity.class)));
-        findViewById(R.id.calendarNavigation).setOnClickListener(v ->
-                startActivity(new Intent(this, Calendar.class)));
-        findViewById(R.id.insightsNavigation).setOnClickListener(v ->
-                startActivity(new Intent(this, Insights.class)));
+    private int dp(int value) {
+        return Math.round(value * getActivity().getResources().getDisplayMetrics().density);
     }
 
-    private int dp(int value) {
-        return Math.round(value * getResources().getDisplayMetrics().density);
+    private <T extends View> T findViewById(int id) {
+        return contentView.findViewById(id);
     }
 }

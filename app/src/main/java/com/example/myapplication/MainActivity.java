@@ -1,179 +1,116 @@
 package com.example.myapplication;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.graphics.Paint;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.ProgressBar;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-
-/**
- * The main screen of the app: "Today".
- */
 public class MainActivity extends Activity {
 
-    private static final int BASE_COMPLETED_TASKS = 2;
-    private static final int TASKS_TOTAL = 5;
+    private static final String STATE_SELECTED_TAB = "selected_tab";
+    private static final String[] TAB_TAGS = {"today", "calendar", "add", "insights"};
+    private static final int[] TAB_IDS = {
+            R.id.nav_today, R.id.nav_calendar, R.id.nav_add, R.id.nav_insights
+    };
 
-    private CheckBox task1Check;
-    private CheckBox task2Check;
-    private CheckBox task3Check;
+    private int selectedTab;
+    private Fragment activeFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_host);
 
-        // Load the layout XML and show it on screen.
-        setContentView(R.layout.activity_main);
-
-        task1Check = findViewById(R.id.task1_check);
-        task2Check = findViewById(R.id.task2_check);
-        task3Check = findViewById(R.id.task3_check);
-
-        // Fill in each part of the screen.
-        showGreeting();
-        showTodayDate();
-        setUpTask(task1Check, R.id.task1_title);
-        setUpTask(task2Check, R.id.task2_title);
-        setUpTask(task3Check, R.id.task3_title);
-
-        // Set initial checked state for task 1 (1 checked + 2 base = 3 of 5 completed initially)
-        if (task1Check != null && !task1Check.isChecked()) {
-            task1Check.setChecked(true);
-        } else {
-            updateProgress();
-        }
-
-        setUpBottomNavigation();
-    }
-
-    /** Shows "Good morning / afternoon / evening, Sara 👋" depending on the current hour. */
-    private void showGreeting() {
-        int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY); // 0 to 23
-
-        int greetingText;
-        if (hour < 12) {
-            greetingText = R.string.greeting_morning;
-        } else if (hour < 18) {
-            greetingText = R.string.greeting_afternoon;
-        } else {
-            greetingText = R.string.greeting_evening;
-        }
-
-        String name = WelcomeActivity.getSavedName(this);
-        if (name == null) {
-            name = "";
-        } else {
-            name = name.trim();
-        }
-
-        TextView greeting = findViewById(R.id.greeting);
-        if (greeting != null) {
-            greeting.setText(getString(greetingText, name));
-        }
-
-        // The profile circle shows the first letter of the name, e.g. "S" for "Sara".
         TextView avatar = findViewById(R.id.avatar);
-        if (avatar != null) {
-            avatar.setText(name.isEmpty() ? "" : name.substring(0, 1).toUpperCase(Locale.ENGLISH));
+        String name = WelcomeActivity.getSavedName(this).trim();
+        avatar.setText(name.isEmpty() ? "" : name.substring(0, 1).toUpperCase(java.util.Locale.ENGLISH));
+
+        findViewById(R.id.nav_today).setOnClickListener(view -> showTab(0));
+        findViewById(R.id.nav_calendar).setOnClickListener(view -> showTab(1));
+        findViewById(R.id.nav_add).setOnClickListener(view -> showTab(2));
+        findViewById(R.id.nav_insights).setOnClickListener(view -> showTab(3));
+
+        if (savedInstanceState == null) {
+            selectedTab = 0;
+            showTab(0);
+        } else {
+            selectedTab = savedInstanceState.getInt(STATE_SELECTED_TAB, 0);
+            activeFragment = getFragmentManager().findFragmentByTag(TAB_TAGS[selectedTab]);
+            updateNavigation();
+            if (activeFragment == null) {
+                showTab(0);
+            }
         }
     }
 
-    /** Shows today's date, for example "Monday, November 16 · Your day at a glance". */
-    private void showTodayDate() {
-        SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d", Locale.ENGLISH);
-        String today = format.format(new Date());
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(STATE_SELECTED_TAB, selectedTab);
+        super.onSaveInstanceState(outState);
+    }
 
-        TextView date = findViewById(R.id.date);
-        if (date != null) {
-            date.setText(getString(R.string.date_subtitle, today));
+    void showCalendarTab() {
+        showTab(1);
+    }
+
+    private void showTab(int tab) {
+        if (tab == selectedTab && activeFragment != null) {
+            updateNavigation();
+            return;
+        }
+
+        FragmentManager manager = getFragmentManager();
+        Fragment fragment = manager.findFragmentByTag(TAB_TAGS[tab]);
+        if (fragment == null) {
+            fragment = createFragment(tab);
+        }
+
+        FragmentTransaction transaction = manager.beginTransaction();
+        if (activeFragment != null && activeFragment.isAdded()) {
+            transaction.hide(activeFragment);
+        }
+        if (fragment.isAdded()) {
+            transaction.show(fragment);
+        } else {
+            transaction.add(R.id.fragment_container, fragment, TAB_TAGS[tab]);
+        }
+        transaction.commit();
+
+        activeFragment = fragment;
+        selectedTab = tab;
+        updateNavigation();
+    }
+
+    private Fragment createFragment(int tab) {
+        switch (tab) {
+            case 1:
+                return new Calendar();
+            case 2:
+                return new AddTask();
+            case 3:
+                return new Insights();
+            default:
+                return new TodayFragment();
         }
     }
 
-    /** Dynamically calculates completed tasks and updates progress card. */
-    private void updateProgress() {
-        int checkedCount = 0;
-        if (task1Check != null && task1Check.isChecked()) checkedCount++;
-        if (task2Check != null && task2Check.isChecked()) checkedCount++;
-        if (task3Check != null && task3Check.isChecked()) checkedCount++;
-
-        int done = BASE_COMPLETED_TASKS + checkedCount;
-        showProgress(done, TASKS_TOTAL);
-    }
-
-    /** Updates the blue card: the "x of y tasks completed" text, the percentage and the bar. */
-    private void showProgress(int done, int total) {
-        int percent = total == 0 ? 0 : (done * 100) / total;
-
-        TextView subtitle = findViewById(R.id.progress_subtitle);
-        TextView percentText = findViewById(R.id.progress_percent);
-        ProgressBar bar = findViewById(R.id.progress_bar);
-
-        if (subtitle != null) {
-            subtitle.setText(getString(R.string.tasks_completed, done, total));
-        }
-        if (percentText != null) {
-            percentText.setText(getString(R.string.percent, percent));
-        }
-        if (bar != null) {
-            bar.setProgress(percent);
-        }
-    }
-
-    /**
-     * Makes a task's round tick box work: when it's ticked, the title gets crossed out
-     * and turns grey; when it's unticked, the title goes back to normal.
-     * Also updates progress in real-time.
-     */
-    private void setUpTask(CheckBox checkBox, int titleId) {
-        if (checkBox == null) return;
-        TextView title = findViewById(titleId);
-
-        checkBox.setOnCheckedChangeListener((button, isChecked) -> {
-            if (title != null) {
-                if (isChecked) {
-                    title.setPaintFlags(title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                    title.setTextColor(getColor(R.color.text_secondary));
-                } else {
-                    title.setPaintFlags(title.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-                    title.setTextColor(getColor(R.color.text_primary));
+    private void updateNavigation() {
+        for (int i = 0; i < TAB_IDS.length; i++) {
+            LinearLayout item = findViewById(TAB_IDS[i]);
+            boolean selected = i == selectedTab;
+            item.setBackground(selected ? getDrawable(R.drawable.bg_nav_active) : null);
+            for (int child = 0; child < item.getChildCount(); child++) {
+                View childView = item.getChildAt(child);
+                if (childView instanceof TextView) {
+                    ((TextView) childView).setTextColor(selected
+                            ? getColor(R.color.brand_blue)
+                            : getColor(R.color.text_secondary));
                 }
             }
-            updateProgress();
-        });
-    }
-
-    /**
-     * The bottom bar.
-     */
-    private void setUpBottomNavigation() {
-        View navToday = findViewById(R.id.nav_today);
-        if (navToday != null) {
-            navToday.setOnClickListener(view ->
-                    Toast.makeText(this, R.string.already_on_today, Toast.LENGTH_SHORT).show());
-        }
-        View navCalendar = findViewById(R.id.nav_calendar);
-        if (navCalendar != null) {
-            navCalendar.setOnClickListener(view ->
-                    startActivity(new Intent(this, com.example.myapplication.Calendar.class)));
-        }
-        View navAdd = findViewById(R.id.nav_add);
-        if (navAdd != null) {
-            navAdd.setOnClickListener(view ->
-                    startActivity(new Intent(this, AddTask.class)));
-        }
-        View navInsights = findViewById(R.id.nav_insights);
-        if (navInsights != null) {
-            navInsights.setOnClickListener(view ->
-                    startActivity(new Intent(this, Insights.class)));
         }
     }
 }

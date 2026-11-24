@@ -1,15 +1,17 @@
 package com.example.myapplication;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Intent;
+import android.app.Fragment;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,7 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-public class Calendar extends Activity {
+public class Calendar extends Fragment {
 
     // ---- Thème Nadhim (mêmes couleurs qu'avant) ----
     private static final int BLUE = Color.rgb(37, 99, 235);
@@ -39,6 +41,8 @@ public class Calendar extends Activity {
     private static final int MODE_DAY = 0;
     private static final int MODE_WEEK = 1;
     private static final int MODE_MONTH = 2;
+
+    private View contentView;
 
     // ---- Modèle ----
     private static class Event {
@@ -66,7 +70,6 @@ public class Calendar extends Activity {
     private LinearLayout agendaContainer;
     private TextView calendarMonthText;
     private TextView agendaDateText;
-    private TextView eventCountBadge;
     private TextView dayTab;
     private TextView weekTab;
     private TextView monthTab;
@@ -76,20 +79,30 @@ public class Calendar extends Activity {
     // =====================================================================
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_calendar);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        contentView = inflater.inflate(R.layout.activity_calendar, container, false);
         bindViews();
         loadEvents();
         attachListeners();
         renderAll();
+        return contentView;
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         loadEvents();   // recharge si l'écran Add a ajouté des événements
         renderAll();
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden && contentView != null) {
+            loadEvents();
+            renderAll();
+        }
     }
 
     private void bindViews() {
@@ -98,7 +111,6 @@ public class Calendar extends Activity {
         agendaContainer = findViewById(R.id.agendaContainer);
         calendarMonthText = findViewById(R.id.calendarMonthText);
         agendaDateText = findViewById(R.id.agendaDateText);
-        eventCountBadge = findViewById(R.id.eventCountBadge);
         dayTab = findViewById(R.id.dayTab);
         weekTab = findViewById(R.id.weekTab);
         monthTab = findViewById(R.id.monthTab);
@@ -112,13 +124,6 @@ public class Calendar extends Activity {
         findViewById(R.id.prevButton).setOnClickListener(v -> shift(-1));
         findViewById(R.id.nextButton).setOnClickListener(v -> shift(1));
 
-        findViewById(R.id.addNavigation).setOnClickListener(v ->
-                startActivity(new Intent(this, AddTask.class)));
-        findViewById(R.id.todayNavigation).setOnClickListener(v -> {
-            startActivity(new Intent(this, MainActivity.class));
-        });
-        findViewById(R.id.insightsNavigation).setOnClickListener(v ->
-                startActivity(new Intent(this, Insights.class)));
     }
 
     // =====================================================================
@@ -159,8 +164,7 @@ public class Calendar extends Activity {
         }
 
         renderAgenda();
-        eventCountBadge.setText(String.valueOf(
-                eventsFor(dateKey(java.util.Calendar.getInstance())).size()));
+
     }
 
     private void styleTabs() {
@@ -186,11 +190,11 @@ public class Calendar extends Activity {
         monthGrid.removeAllViews();
 
         // En-tête : M T W T F S S
-        LinearLayout header = new LinearLayout(this);
+        LinearLayout header = new LinearLayout(getActivity());
         header.setOrientation(LinearLayout.HORIZONTAL);
         String[] letters = {"M", "T", "W", "T", "F", "S", "S"};
         for (String letter : letters) {
-            TextView t = new TextView(this);
+            TextView t = new TextView(getActivity());
             t.setText(letter);
             t.setGravity(Gravity.CENTER);
             t.setTextColor(MUTED);
@@ -206,7 +210,7 @@ public class Calendar extends Activity {
         int month = selectedDate.get(java.util.Calendar.MONTH);
 
         for (int row = 0; row < 6; row++) {
-            LinearLayout line = new LinearLayout(this);
+            LinearLayout line = new LinearLayout(getActivity());
             line.setOrientation(LinearLayout.HORIZONTAL);
             for (int col = 0; col < 7; col++) {
                 boolean inMonth = day.get(java.util.Calendar.MONTH) == month;
@@ -226,7 +230,7 @@ public class Calendar extends Activity {
 
         int textColor = selected ? Color.WHITE : (inMonth ? DARK : FADED);
 
-        LinearLayout cell = new LinearLayout(this);
+        LinearLayout cell = new LinearLayout(getActivity());
         cell.setOrientation(LinearLayout.VERTICAL);
         cell.setGravity(Gravity.CENTER);
         if (selected) {
@@ -236,7 +240,7 @@ public class Calendar extends Activity {
         }
 
         if (showWeekday) {
-            TextView weekday = new TextView(this);
+            TextView weekday = new TextView(getActivity());
             weekday.setGravity(Gravity.CENTER);
             weekday.setText(fmt("EEE", date));
             weekday.setTextColor(selected ? Color.WHITE : MUTED);
@@ -244,7 +248,7 @@ public class Calendar extends Activity {
             cell.addView(weekday);
         }
 
-        TextView number = new TextView(this);
+        TextView number = new TextView(getActivity());
         number.setGravity(Gravity.CENTER);
         number.setText(String.valueOf(date.get(java.util.Calendar.DAY_OF_MONTH)));
         number.setTextColor(textColor);
@@ -252,7 +256,7 @@ public class Calendar extends Activity {
         number.setTypeface(null, Typeface.BOLD);
         cell.addView(number);
 
-        View dot = new View(this);
+        View dot = new View(getActivity());
         GradientDrawable dotShape = new GradientDrawable();
         dotShape.setShape(GradientDrawable.OVAL);
         dotShape.setColor(selected ? Color.WHITE : BLUE);
@@ -298,7 +302,7 @@ public class Calendar extends Activity {
         List<Event> list = eventsFor(dateKey(date));
 
         if (withHeader) {
-            TextView header = new TextView(this);
+            TextView header = new TextView(getActivity());
             header.setText(fmt("EEEE, MMM d", date));
             header.setTextColor(sameDate(date, java.util.Calendar.getInstance()) ? BLUE : DARK);
             header.setTextSize(12);
@@ -317,7 +321,7 @@ public class Calendar extends Activity {
         }
 
         if (list.isEmpty()) {
-            TextView empty = new TextView(this);
+            TextView empty = new TextView(getActivity());
             empty.setText(withHeader ? "Free" : "Nothing planned. Tap below to add an event.");
             empty.setTextColor(MUTED);
             empty.setTextSize(12);
@@ -331,14 +335,14 @@ public class Calendar extends Activity {
     }
 
     private View createEventRow(final Event event) {
-        LinearLayout row = new LinearLayout(this);
+        LinearLayout row = new LinearLayout(getActivity());
         row.setOrientation(LinearLayout.HORIZONTAL);
         LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         rowParams.bottomMargin = dp(8);
         row.setLayoutParams(rowParams);
 
-        TextView time = new TextView(this);
+        TextView time = new TextView(getActivity());
         time.setText(time(event.minutes));
         time.setTextColor(MUTED);
         time.setTextSize(12);
@@ -346,20 +350,20 @@ public class Calendar extends Activity {
         time.setLayoutParams(new LinearLayout.LayoutParams(dp(48),
                 LinearLayout.LayoutParams.WRAP_CONTENT));
 
-        LinearLayout card = new LinearLayout(this);
+        LinearLayout card = new LinearLayout(getActivity());
         card.setOrientation(LinearLayout.VERTICAL);
         card.setPadding(dp(12), dp(8), dp(10), dp(8));
         card.setBackground(rounded(Color.WHITE, 10, BLUE_BORDER, 1));
         card.setLayoutParams(new LinearLayout.LayoutParams(
                 0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
 
-        TextView title = new TextView(this);
+        TextView title = new TextView(getActivity());
         title.setText(event.title);
         title.setTextColor(DARK);
         title.setTextSize(14);
         title.setTypeface(null, Typeface.BOLD);
 
-        TextView details = new TextView(this);
+        TextView details = new TextView(getActivity());
         details.setText(time(event.minutes) + " – " + time(event.minutes + event.duration)
                 + "  ·  " + event.duration + " min");
         details.setTextColor(MUTED);
@@ -382,14 +386,14 @@ public class Calendar extends Activity {
     // =====================================================================
 
     private void confirmDelete(final Event event) {
-        new AlertDialog.Builder(this)
+        new AlertDialog.Builder(getActivity())
                 .setTitle("Delete event?")
                 .setMessage(event.title)
                 .setPositiveButton("Delete", (d, w) -> {
                     events.remove(event);
                     saveEvents();
                     renderAll();
-                    Toast.makeText(this, "Event deleted", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Event deleted", Toast.LENGTH_SHORT).show();
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
@@ -410,7 +414,7 @@ public class Calendar extends Activity {
 
     private void loadEvents() {
         events.clear();
-        SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+        SharedPreferences prefs = getActivity().getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         String raw = prefs.getString(KEY_EVENTS, null);
         if (raw == null) {
             seedEvents();
@@ -443,7 +447,7 @@ public class Calendar extends Activity {
             }
         } catch (JSONException ignored) {
         }
-        getSharedPreferences(PREFS, MODE_PRIVATE).edit()
+        getActivity().getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
                 .putString(KEY_EVENTS, array.toString()).apply();
     }
 
@@ -498,6 +502,10 @@ public class Calendar extends Activity {
     }
 
     private int dp(int value) {
-        return Math.round(value * getResources().getDisplayMetrics().density);
+        return Math.round(value * getActivity().getResources().getDisplayMetrics().density);
+    }
+
+    private <T extends View> T findViewById(int id) {
+        return contentView.findViewById(id);
     }
 }

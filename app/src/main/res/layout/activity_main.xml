@@ -1,39 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    SCREEN 01 · "Today" (light theme), built from the Figma frame "01 Today · Light".
 
-    How the screen is stacked (a FrameLayout draws its children on top of each other):
-      1. two faint decorative images (grid lines + blue glow) as the background
-      2. a ScrollView with all the content, so it can scroll on small phones
-      3. the bottom navigation bar, which stays fixed at the bottom
-
-    Units: "dp" is used for sizes and "sp" for text sizes. They scale with the phone's
-    screen density (and, for sp, with the user's font-size setting). The Figma frame is
-    390 wide, so 1 Figma pixel ≈ 1dp.
--->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/screen_background">
+>
 
-    <!-- ===== 1. DECORATIVE BACKGROUND ===== -->
-    <!-- Very faint grid lines covering the whole screen (Figma layer "grid").
-         importantForAccessibility="no" tells screen readers to skip it. -->
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:importantForAccessibility="no"
-        android:scaleType="fitXY"
-        android:src="@drawable/bg_grid" />
 
-    <!-- Soft blue glow at the top right (Figma layer "Star 1"). -->
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:importantForAccessibility="no"
-        android:scaleType="fitXY"
-        android:src="@drawable/bg_glow" />
 
     <!-- ===== 2. SCROLLABLE CONTENT ===== -->
     <!-- layout_marginBottom="69dp" (bar height 56 + gap 13) makes the scrolling
@@ -42,75 +14,16 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="69dp"
         android:clipToPadding="false"
         android:paddingBottom="16dp"
         android:scrollbars="none">
 
-        <!-- A vertical LinearLayout places its children one under the other.
-             20dp on each side = the margins used in the Figma design. -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingStart="20dp"
-            android:paddingTop="16dp"
             android:paddingEnd="20dp">
-
-            <!-- ===== HEADER: logo, tagline and profile circle ===== -->
-            <!-- RelativeLayout positions children relative to each other
-                 (for example "below the logo" or "on the right edge"). -->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <!-- "Nadhim" logo (vector image converted from Figma). -->
-                <ImageView
-                    android:id="@+id/logo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginTop="1dp"
-                    android:contentDescription="@string/logo_description"
-                    android:src="@drawable/logo_nadhim" />
-
-                <!-- Small grey tagline under the logo. -->
-                <TextView
-                    style="@style/Text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/logo"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginTop="8dp"
-                    android:fontFamily="@font/poppins_semibold"
-                    android:text="@string/tagline"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="8sp" />
-
-                <!-- Profile circle with the user's initial, pinned to the right. -->
-                <TextView
-                    android:id="@+id/avatar"
-                    android:layout_width="34dp"
-                    android:layout_height="34dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginEnd="4dp"
-                    android:background="@drawable/bg_avatar"
-                    android:contentDescription="@string/profile_description"
-                    android:fontFamily="@font/poppins_bold"
-                    android:gravity="center"
-                    android:includeFontPadding="false"
-                    android:text=""
-                    android:textColor="@color/white"
-                    android:textSize="14sp" />
-            </RelativeLayout>
-
-            <!-- Thin horizontal line under the header. A plain View with a
-                 background color and 1dp height is the simplest divider. -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="9dp"
-                android:background="@color/border" />
 
             <!-- ===== GREETING ===== -->
             <!-- The text is set from MainActivity.java (it depends on the time of day). -->
@@ -354,96 +267,5 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- ===== 3. BOTTOM NAVIGATION BAR ===== -->
-    <!-- layout_gravity="bottom" sticks it to the bottom of the FrameLayout,
-         so it stays in place while the content above scrolls.
-         The four tabs share the width equally (layout_weight="1" in the NavItem style). -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginBottom="13dp"
-        android:background="@drawable/bg_bottom_nav"
-        android:orientation="horizontal"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp">
-
-        <!-- "Today": the tab we're on, so it gets the light blue pill and blue text. -->
-        <LinearLayout
-            android:id="@+id/nav_today"
-            style="@style/NavItem"
-            android:background="@drawable/bg_nav_active"
-            android:contentDescription="@string/nav_today">
-
-            <TextView
-                style="@style/Text.NavIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/nav_today_icon"
-                android:textColor="@color/brand_blue" />
-
-            <TextView
-                style="@style/Text.NavLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/nav_today"
-                android:textColor="@color/brand_blue" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/nav_calendar"
-            style="@style/NavItem"
-            android:contentDescription="@string/nav_calendar">
-
-            <TextView
-                style="@style/Text.NavIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/nav_calendar_icon" />
-
-            <TextView
-                style="@style/Text.NavLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/nav_calendar" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/nav_add"
-            style="@style/NavItem"
-            android:contentDescription="@string/nav_add">
-
-            <TextView
-                style="@style/Text.NavIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/nav_add_icon" />
-
-            <TextView
-                style="@style/Text.NavLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/nav_add" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/nav_insights"
-            style="@style/NavItem"
-            android:contentDescription="@string/nav_insights">
-
-            <TextView
-                style="@style/Text.NavIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/nav_insights_icon" />
-
-            <TextView
-                style="@style/Text.NavLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/nav_insights" />
-        </LinearLayout>
-    </LinearLayout>
+  
 </FrameLayout>

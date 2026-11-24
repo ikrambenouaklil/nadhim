@@ -1,18 +1,19 @@
 package com.example.myapplication;
 
-import android.app.Activity;
-import android.content.Intent;
+import android.app.Fragment;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Insights extends Activity {
+public class Insights extends Fragment {
 
     // ---- Thème Nadhim ----
     private static final int BLUE = Color.rgb(37, 99, 235);
@@ -40,17 +41,18 @@ public class Insights extends Activity {
 
     private LinearLayout weeklyBars;
     private LinearLayout categoriesContainer;
+    private View contentView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_insights);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        contentView = inflater.inflate(R.layout.activity_insights, container, false);
         bindViews();
         renderStats();
         renderWeeklyChart();
         renderCategories();
         renderFocusCard();
-        setupNavigation();
+        return contentView;
     }
 
     private void bindViews() {
@@ -81,7 +83,7 @@ public class Insights extends Activity {
         }
 
         for (int i = 0; i < DAYS.length; i++) {
-            LinearLayout column = new LinearLayout(this);
+            LinearLayout column = new LinearLayout(getActivity());
             column.setOrientation(LinearLayout.VERTICAL);
             column.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
             column.setLayoutParams(new LinearLayout.LayoutParams(
@@ -89,12 +91,12 @@ public class Insights extends Activity {
 
             // Barre
             int barHeight = Math.max(dp(14), dp(CHART_BAR_MAX_DP) * ACTIVITY[i] / max);
-            View bar = new View(this);
+            View bar = new View(getActivity());
             bar.setBackground(i == maxIndex ? barDrawable(LIME, LIME) : barDrawable(BLUE_LIGHT, BLUE));
             bar.setLayoutParams(new LinearLayout.LayoutParams(dp(18), barHeight));
 
             // Libellé du jour
-            TextView label = new TextView(this);
+            TextView label = new TextView(getActivity());
             label.setText(DAYS[i]);
             label.setTextColor(MUTED);
             label.setTextSize(11);
@@ -106,7 +108,7 @@ public class Insights extends Activity {
 
             final int dayIndex = i;
             final int value = ACTIVITY[i];
-            column.setOnClickListener(v -> Toast.makeText(this,
+            column.setOnClickListener(v -> Toast.makeText(getActivity(),
                     value + " tasks on day " + (dayIndex + 1), Toast.LENGTH_SHORT).show());
 
             column.addView(bar);
@@ -118,7 +120,7 @@ public class Insights extends Activity {
     private void renderCategories() {
         categoriesContainer.removeAllViews();
         for (int i = 0; i < CATEGORY_NAMES.length; i++) {
-            LinearLayout row = new LinearLayout(this);
+            LinearLayout row = new LinearLayout(getActivity());
             row.setOrientation(LinearLayout.HORIZONTAL);
             row.setGravity(Gravity.CENTER_VERTICAL);
             LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
@@ -127,7 +129,7 @@ public class Insights extends Activity {
             row.setLayoutParams(rowParams);
 
             // Pastille de couleur
-            View dot = new View(this);
+            View dot = new View(getActivity());
             GradientDrawable shape = new GradientDrawable();
             shape.setShape(GradientDrawable.OVAL);
             shape.setColor(CATEGORY_COLORS[i]);
@@ -136,14 +138,14 @@ public class Insights extends Activity {
             dotParams.setMarginEnd(dp(12));
             dot.setLayoutParams(dotParams);
 
-            TextView name = new TextView(this);
+            TextView name = new TextView(getActivity());
             name.setText(CATEGORY_NAMES[i]);
             name.setTextColor(DARK);
             name.setTextSize(13);
             name.setLayoutParams(new LinearLayout.LayoutParams(
                     0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
 
-            TextView percent = new TextView(this);
+            TextView percent = new TextView(getActivity());
             percent.setText(CATEGORY_PERCENT[i] + "%");
             percent.setTextColor(MUTED);
             percent.setTextSize(12);
@@ -165,28 +167,6 @@ public class Insights extends Activity {
     }
 
     // =====================================================================
-    // Navigation du bas
-    // =====================================================================
-
-    private void setupNavigation() {
-        // Onglet actif : Insights (pilule bleue)
-        TextView insightsNav = findViewById(R.id.insightsNavigation);
-        GradientDrawable pill = new GradientDrawable();
-        pill.setColor(BLUE);
-        pill.setCornerRadius(dp(20));
-        insightsNav.setBackground(pill);
-        insightsNav.setTextColor(Color.WHITE);
-        insightsNav.setTypeface(null, Typeface.BOLD);
-
-        findViewById(R.id.todayNavigation).setOnClickListener(v ->
-                startActivity(new Intent(this, MainActivity.class)));
-        findViewById(R.id.calendarNavigation).setOnClickListener(v ->
-                startActivity(new Intent(this, Calendar.class)));
-        findViewById(R.id.addNavigation).setOnClickListener(v ->
-                startActivity(new Intent(this, AddTask.class)));
-    }
-
-    // =====================================================================
     // Utilitaires
     // =====================================================================
 
@@ -199,6 +179,10 @@ public class Insights extends Activity {
     }
 
     private int dp(int value) {
-        return Math.round(value * getResources().getDisplayMetrics().density);
+        return Math.round(value * getActivity().getResources().getDisplayMetrics().density);
+    }
+
+    private <T extends View> T findViewById(int id) {
+        return contentView.findViewById(id);
     }
 }
