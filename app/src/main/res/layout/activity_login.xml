@@ -78,19 +78,36 @@
             android:textColor="@color/text_primary"
             android:textSize="12sp" />
 
-        <EditText
-            android:id="@+id/loginPassword"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bg_google_button"
-            android:fontFamily="@font/poppins_regular"
-            android:hint="********"
-            android:inputType="textPassword"
-            android:paddingStart="16dp"
-            android:paddingEnd="48dp"
-            android:textColor="@color/text_primary"
-            android:textSize="13sp" />
+            android:layout_marginTop="8dp">
+
+            <EditText
+                android:id="@+id/loginPassword"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_google_button"
+                android:fontFamily="@font/poppins_regular"
+                android:hint="********"
+                android:inputType="textPassword"
+                android:paddingStart="16dp"
+                android:paddingEnd="48dp"
+                android:textColor="@color/text_primary"
+                android:textSize="13sp" />
+
+            <ImageButton
+                android:id="@+id/togglePasswordVisibility"
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="end|center_vertical"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/show_password"
+                android:padding="14dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_visibility_off"
+                 />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/forgotPassword"

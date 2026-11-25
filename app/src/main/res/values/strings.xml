@@ -15,6 +15,10 @@
     <string name="name_hint">Your name</string>
     <string name="welcome_continue">Continue</string>
     <string name="name_required">Please enter your name</string>
+    <string name="show_password">Show password</string>
+    <string name="hide_password">Hide password</string>
+    <string name="forgot_password_title">Password recovery</string>
+    <string name="forgot_password_message">Password recovery is not available yet because accounts are stored only on this device. Email recovery will be available after account services are connected.</string>
 
     <!-- Greeting. %1$s is replaced by the user name from the Java code. -->
     <string name="greeting_morning">Good morning, %1$s 👋</string>

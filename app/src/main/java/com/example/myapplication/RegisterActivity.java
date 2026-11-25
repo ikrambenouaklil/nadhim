@@ -76,6 +76,13 @@ public class RegisterActivity extends Activity {
             sp.edit().putString(e+".password",p)
                     .putString(e+".name",name.getText().toString().trim()).apply();
 
+            String userName = name.getText().toString().trim();
+
+            getSharedPreferences("nadhim_preferences", MODE_PRIVATE)
+                    .edit()
+                    .putString("name", userName)
+                    .apply();
+
                // once i completed the next interface is main Activity
             startActivity(new Intent(this, MainActivity.class));
             finish();
