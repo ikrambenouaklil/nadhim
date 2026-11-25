@@ -14,7 +14,7 @@ public class LoginActivity extends Activity {
 
         EditText email = findViewById(R.id.loginEmail);
         EditText password = findViewById(R.id.loginPassword);
-
+       // toast => like a notification
         findViewById(R.id.loginSubmit).setOnClickListener(view -> {
             if (email.getText().toString().trim().isEmpty()
                     || password.getText().toString().trim().isEmpty()) {
