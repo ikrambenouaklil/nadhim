@@ -1,0 +1,24 @@
+
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <!-- ===== 1. DECORATIVE BACKGROUND ===== -->
+    <!-- Very faint grid lines covering the whole screen (Figma layer "grid").
+         importantForAccessibility="no" tells screen readers to skip it. -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no"
+        android:scaleType="fitXY"
+        android:src="@drawable/bg_grid" />
+
+    <!-- Soft blue glow at the top right (Figma layer "Star 1"). -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:importantForAccessibility="no"
+        android:scaleType="fitXY"
+        android:src="@drawable/bg_glow" />
+</FrameLayout>
