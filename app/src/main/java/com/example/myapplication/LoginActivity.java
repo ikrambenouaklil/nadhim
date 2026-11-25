@@ -92,6 +92,7 @@ public class LoginActivity extends Activity {
             getSharedPreferences("nadhim_preferences", MODE_PRIVATE)
                     .edit()
                     .putString("name", userName)
+                    .putString("email", e)
                     .apply();
             //  3. forward user to main activity
             startActivity(new Intent(this, MainActivity.class));

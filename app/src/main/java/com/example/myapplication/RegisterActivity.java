@@ -81,6 +81,7 @@ public class RegisterActivity extends Activity {
             getSharedPreferences("nadhim_preferences", MODE_PRIVATE)
                     .edit()
                     .putString("name", userName)
+                    .putString("email",e )
                     .apply();
 
                // once i completed the next interface is main Activity

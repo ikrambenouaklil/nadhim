@@ -11,12 +11,17 @@ public class WelcomeActivity extends Activity {
 
     private static final String PREFERENCES = "nadhim_preferences";
     private static final String NAME_KEY = "name";
+    private static final String EMAIL_KEY = "email";
 
     public static String getSavedName(Context context) {
-        return context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
+        return context.getSharedPreferences(PREFERENCES, context.MODE_PRIVATE)
                 .getString(NAME_KEY, "");
     }
+    public  static String getSavedEmail(Context context){
 
+        return context.getSharedPreferences(PREFERENCES, context.MODE_PRIVATE)
+                .getString( EMAIL_KEY,"");
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
