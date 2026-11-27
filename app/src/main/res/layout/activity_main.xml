@@ -116,115 +116,26 @@
                 android:text="@string/your_priorities"
                 android:textSize="17sp" />
 
-            <!-- Each task card is a horizontal row:
-                 [ tick circle ] [ title + time (takes the free space) ] [ badge ]
-                 The look of the card, tick box and badge comes from the styles in
-                 values/styles.xml, so the three cards stay identical. -->
+            <!-- Each task row uses the reusable styles from values/styles.xml. -->
 
-            <!-- Task 1 · HIGH -->
-            <LinearLayout style="@style/TaskCard">
+            <!-- Today tasks are created from the signed-in user's saved task list. -->
+            <LinearLayout
+                android:id="@+id/todayTasksContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
 
-                <CheckBox
-                    android:id="@+id/task1_check"
-                    style="@style/TaskCheck"
-                    android:contentDescription="@string/task1_title" />
-
-                <!-- layout_width="0dp" + layout_weight="1" = "fill the space that is left". -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/task1_title"
-                        style="@style/Text.TaskTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/task1_title" />
-
-                    <TextView
-                        style="@style/Text.TaskTime"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/task1_time" />
-                </LinearLayout>
-
-                <TextView
-                    style="@style/Text.Badge"
-                    android:background="@drawable/bg_badge_high"
-                    android:text="@string/priority_high" />
-            </LinearLayout>
-
-            <!-- Task 2 · MED -->
-            <LinearLayout style="@style/TaskCard">
-
-                <CheckBox
-                    android:id="@+id/task2_check"
-                    style="@style/TaskCheck"
-                    android:contentDescription="@string/task2_title" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/task2_title"
-                        style="@style/Text.TaskTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/task2_title" />
-
-                    <TextView
-                        style="@style/Text.TaskTime"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/task2_time" />
-                </LinearLayout>
-
-                <TextView
-                    style="@style/Text.Badge"
-                    android:background="@drawable/bg_badge_med"
-                    android:text="@string/priority_med" />
-            </LinearLayout>
-
-            <!-- Task 3 · LOW (dark text on the green badge, as in Figma) -->
-            <LinearLayout style="@style/TaskCard">
-
-                <CheckBox
-                    android:id="@+id/task3_check"
-                    style="@style/TaskCheck"
-                    android:contentDescription="@string/task3_title" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/task3_title"
-                        style="@style/Text.TaskTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/task3_title" />
-
-                    <TextView
-                        style="@style/Text.TaskTime"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/task3_time" />
-                </LinearLayout>
-
-                <TextView
-                    style="@style/Text.Badge"
-                    android:background="@drawable/bg_badge_low"
-                    android:text="@string/priority_low"
-                    android:textColor="@color/text_primary" />
-            </LinearLayout>
-
+            <TextView
+                android:id="@+id/todayTasksEmpty"
+                style="@style/Text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:text="@string/no_tasks_today"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:visibility="gone" />
             <!-- ===== NADHIM SUGGESTS CARD ===== -->
             <LinearLayout
                 android:layout_width="match_parent"

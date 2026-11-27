@@ -3,8 +3,6 @@ package com.example.myapplication;
 import android.app.DatePickerDialog;
 import android.app.Fragment;
 import android.app.TimePickerDialog;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
@@ -16,25 +14,18 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 public class AddTask extends Fragment {
 
-    // ---- Thème Nadhim ----
+    // ---- Nadhim theme ----
     private static final int BLUE = Color.rgb(37, 99, 235);
     private static final int BLUE_DARK = Color.rgb(29, 78, 216);
     private static final int BLUE_CHIP = Color.rgb(219, 234, 254);
     private static final int DARK = Color.rgb(51, 65, 85);
     private static final int MUTED = Color.rgb(100, 116, 139);
     private static final int BORDER = Color.rgb(226, 232, 240);
-    private static final String PREFS = "nadhim_calendar";
-    private static final String KEY_EVENTS = "events";
-
     private View contentView;
     private EditText descriptionInput;
     private EditText detailsInput;
@@ -69,7 +60,7 @@ public class AddTask extends Fragment {
     }
 
     // =====================================================================
-    // Deadline : date puis heure
+    // Deadline: choose a date, then a time
     // =====================================================================
 
     private void setupDeadline() {
@@ -100,7 +91,7 @@ public class AddTask extends Fragment {
     }
 
     // =====================================================================
-    // Durée estimée : 30 min / 1 hour / 2 hours
+    // Estimated duration: 30 min / 1 hour / 2 hours
     // =====================================================================
 
     private void setupDurationChips() {
@@ -128,7 +119,7 @@ public class AddTask extends Fragment {
     }
 
     // =====================================================================
-    // Bouton « Analyze with Nadhim »
+    // Analyze with Nadhim button
     // =====================================================================
 
     private void setupAnalyzeButton() {
@@ -157,27 +148,22 @@ public class AddTask extends Fragment {
     }
 
     private boolean saveTask(String title, String notes) {
-        SharedPreferences prefs = getActivity().getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        try {
-            JSONArray events = new JSONArray(prefs.getString(KEY_EVENTS, "[]"));
-        
-            JSONObject task = new JSONObject();
-            
-            task.put("id", System.currentTimeMillis());
-            task.put("date", new SimpleDateFormat("yyyy-MM-dd", Locale.US)
-                    .format(deadline.getTime()));
-            task.put("minutes", deadline.get(java.util.Calendar.HOUR_OF_DAY) * 60
-                    + deadline.get(java.util.Calendar.MINUTE));
-            task.put("duration", duration);
-            task.put("title", title);
-            task.put("notes", notes);
-            events.put(task);
-            prefs.edit().putString(KEY_EVENTS, events.toString()).apply();
-            return true;
-        } catch (JSONException e) {
-            Toast.makeText(getActivity(), "Could not save the task", Toast.LENGTH_SHORT).show();
-            return false;
-        }
+        // Put the form values into a Task object before asking TaskStore to save it.
+        Task task = new Task(
+                System.currentTimeMillis(),
+                title,
+                new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(deadline.getTime()),
+                deadline.get(java.util.Calendar.HOUR_OF_DAY) * 60
+                        + deadline.get(java.util.Calendar.MINUTE),
+                duration,
+                notes,
+                "",
+                "",
+                false
+        );
+
+        // TaskStore saves the task under the signed-in user email.
+        return new TaskStore(getActivity()).add(task);
     }
 
     private int dp(int value) {

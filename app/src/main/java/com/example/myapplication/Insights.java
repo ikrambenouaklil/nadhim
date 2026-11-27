@@ -2,7 +2,6 @@ package com.example.myapplication;
 
 import android.app.Fragment;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -13,9 +12,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Insights extends Fragment {
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
-    // ---- Thème Nadhim ----
+public class Insights extends Fragment {
     private static final int BLUE = Color.rgb(37, 99, 235);
     private static final int BLUE_DARK = Color.rgb(29, 78, 216);
     private static final int BLUE_LIGHT = Color.rgb(96, 165, 250);
@@ -23,20 +29,7 @@ public class Insights extends Fragment {
     private static final int PURPLE = Color.rgb(147, 51, 234);
     private static final int DARK = Color.rgb(51, 65, 85);
     private static final int MUTED = Color.rgb(100, 116, 139);
-
-    // ---- Données (exemple : à remplacer par tes vraies données) ----
-    private static final String TASKS_DONE = "12";
-    private static final String ON_TIME = "92%";
-    private static final String FOCUS_TIME = "4.5h";
-    private static final String BEST_FOCUS_TIME = "9:00 AM – 11:00 AM";
-
-    private static final String[] DAYS = {"M", "T", "W", "T", "F", "S", "S"};
-    private static final int[] ACTIVITY = {5, 8, 6, 11, 9, 12, 7}; // tâches par jour
-
-    private static final String[] CATEGORY_NAMES = {"Work", "Study", "Personal"};
-    private static final int[] CATEGORY_PERCENT = {48, 32, 20};
     private static final int[] CATEGORY_COLORS = {BLUE, LIME, PURPLE};
-
     private static final int CHART_BAR_MAX_DP = 130;
 
     private LinearLayout weeklyBars;
@@ -47,57 +40,102 @@ public class Insights extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         contentView = inflater.inflate(R.layout.activity_insights, container, false);
-        bindViews();
-        renderStats();
-        renderWeeklyChart();
-        renderCategories();
-        renderFocusCard();
+        weeklyBars = findViewById(R.id.weeklyBars);
+        categoriesContainer = findViewById(R.id.categoriesContainer);
+        refreshInsights();
         return contentView;
     }
 
-    private void bindViews() {
-        weeklyBars = findViewById(R.id.weeklyBars);
-        categoriesContainer = findViewById(R.id.categoriesContainer);
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshIfReady();
     }
 
-    // =====================================================================
-    // Affichage
-    // =====================================================================
-
-    private void renderStats() {
-        ((TextView) findViewById(R.id.statTasksValue)).setText(TASKS_DONE);
-        ((TextView) findViewById(R.id.statOnTimeValue)).setText(ON_TIME);
-        ((TextView) findViewById(R.id.statFocusValue)).setText(FOCUS_TIME);
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) refreshIfReady();
     }
 
-    private void renderWeeklyChart() {
-        weeklyBars.removeAllViews();
+    private void refreshIfReady() {
+        if (contentView != null) refreshInsights();
+    }
 
-        int max = 1;
-        int maxIndex = 0;
-        for (int i = 0; i < ACTIVITY.length; i++) {
-            if (ACTIVITY[i] > max) {
-                max = ACTIVITY[i];
-                maxIndex = i;
-            }
+    private void refreshInsights() {
+        // Read the current user's saved tasks, then calculate every insight from that list.
+        List<Task> tasks = new TaskStore(getActivity()).getAll();
+        renderStats(tasks);
+        renderWeeklyChart(tasks);
+        renderCategories(tasks);
+        renderFocusCard(tasks);
+    }
+
+    private void renderStats(List<Task> tasks) {
+        int completed = 0;
+        int plannedMinutes = 0;
+        for (Task task : tasks) {
+            if (task.done) completed++;
+            plannedMinutes += Math.max(0, task.duration);
         }
 
-        for (int i = 0; i < DAYS.length; i++) {
+        int total = tasks.size();
+        int completionRate = total == 0 ? 0 : (completed * 100) / total;
+        float plannedHours = plannedMinutes / 60f;
+
+        ((TextView) findViewById(R.id.statTasksValue)).setText(String.valueOf(completed));
+        ((TextView) findViewById(R.id.statOnTimeValue)).setText(completionRate + "%");
+        ((TextView) findViewById(R.id.statFocusValue)).setText(
+                String.format(Locale.US, "%.1fh", plannedHours));
+    }
+
+    private void renderWeeklyChart(List<Task> tasks) {
+        weeklyBars.removeAllViews();
+
+        Calendar weekStart = Calendar.getInstance();
+        weekStart.set(Calendar.HOUR_OF_DAY, 0);
+        weekStart.set(Calendar.MINUTE, 0);
+        weekStart.set(Calendar.SECOND, 0);
+        weekStart.set(Calendar.MILLISECOND, 0);
+        int daysSinceMonday = (weekStart.get(Calendar.DAY_OF_WEEK) + 5) % 7;
+        weekStart.add(Calendar.DAY_OF_MONTH, -daysSinceMonday);
+
+        List<Calendar> days = new ArrayList<>();
+        int[] counts = new int[7];
+        int max = 0;
+        for (int i = 0; i < 7; i++) {
+            Calendar day = (Calendar) weekStart.clone();
+            day.add(Calendar.DAY_OF_MONTH, i);
+            days.add(day);
+
+            String key = dateKey(day);
+            for (Task task : tasks) {
+                if (key.equals(task.date)) counts[i]++;
+            }
+            max = Math.max(max, counts[i]);
+        }
+
+        for (int i = 0; i < days.size(); i++) {
+            Calendar day = days.get(i);
+            int count = counts[i];
             LinearLayout column = new LinearLayout(getActivity());
             column.setOrientation(LinearLayout.VERTICAL);
             column.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
             column.setLayoutParams(new LinearLayout.LayoutParams(
                     0, LinearLayout.LayoutParams.MATCH_PARENT, 1));
 
-            // Barre
-            int barHeight = Math.max(dp(14), dp(CHART_BAR_MAX_DP) * ACTIVITY[i] / max);
+            int barHeight = count == 0
+                    ? dp(4)
+                    : Math.max(dp(14), dp(CHART_BAR_MAX_DP) * count / Math.max(1, max));
             View bar = new View(getActivity());
-            bar.setBackground(i == maxIndex ? barDrawable(LIME, LIME) : barDrawable(BLUE_LIGHT, BLUE));
+            bar.setBackground(i == maxIndex(counts) && count > 0
+                    ? barDrawable(LIME, LIME)
+                    : barDrawable(BLUE_LIGHT, BLUE));
             bar.setLayoutParams(new LinearLayout.LayoutParams(dp(18), barHeight));
 
-            // Libellé du jour
+            String fullDay = new SimpleDateFormat("EEEE", Locale.ENGLISH).format(day.getTime());
             TextView label = new TextView(getActivity());
-            label.setText(DAYS[i]);
+            label.setText(fullDay.substring(0, 1));
             label.setTextColor(MUTED);
             label.setTextSize(11);
             label.setGravity(Gravity.CENTER);
@@ -106,10 +144,9 @@ public class Insights extends Fragment {
             labelParams.topMargin = dp(10);
             label.setLayoutParams(labelParams);
 
-            final int dayIndex = i;
-            final int value = ACTIVITY[i];
+            String dayName = fullDay;
             column.setOnClickListener(v -> Toast.makeText(getActivity(),
-                    value + " tasks on day " + (dayIndex + 1), Toast.LENGTH_SHORT).show());
+                    count + " tasks scheduled for " + dayName, Toast.LENGTH_SHORT).show());
 
             column.addView(bar);
             column.addView(label);
@@ -117,65 +154,109 @@ public class Insights extends Fragment {
         }
     }
 
-    private void renderCategories() {
+    private int maxIndex(int[] values) {
+        int index = 0;
+        for (int i = 1; i < values.length; i++) {
+            if (values[i] > values[index]) index = i;
+        }
+        return index;
+    }
+
+    private void renderCategories(List<Task> tasks) {
         categoriesContainer.removeAllViews();
-        for (int i = 0; i < CATEGORY_NAMES.length; i++) {
-            LinearLayout row = new LinearLayout(getActivity());
-            row.setOrientation(LinearLayout.HORIZONTAL);
-            row.setGravity(Gravity.CENTER_VERTICAL);
-            LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            rowParams.topMargin = dp(i == 0 ? 0 : 14);
-            row.setLayoutParams(rowParams);
+        Map<String, Integer> counts = new LinkedHashMap<>();
+        for (Task task : tasks) {
+            String category = task.category == null ? "" : task.category.trim();
+            if (category.isEmpty()) category = "Uncategorized";
+            counts.put(category, counts.getOrDefault(category, 0) + 1);
+        }
 
-            // Pastille de couleur
-            View dot = new View(getActivity());
-            GradientDrawable shape = new GradientDrawable();
-            shape.setShape(GradientDrawable.OVAL);
-            shape.setColor(CATEGORY_COLORS[i]);
-            dot.setBackground(shape);
-            LinearLayout.LayoutParams dotParams = new LinearLayout.LayoutParams(dp(10), dp(10));
-            dotParams.setMarginEnd(dp(12));
-            dot.setLayoutParams(dotParams);
+        if (counts.isEmpty()) {
+            addCategoryRow("No tasks yet", 0, 0);
+            return;
+        }
 
-            TextView name = new TextView(getActivity());
-            name.setText(CATEGORY_NAMES[i]);
-            name.setTextColor(DARK);
-            name.setTextSize(13);
-            name.setLayoutParams(new LinearLayout.LayoutParams(
-                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
-
-            TextView percent = new TextView(getActivity());
-            percent.setText(CATEGORY_PERCENT[i] + "%");
-            percent.setTextColor(MUTED);
-            percent.setTextSize(12);
-
-            row.addView(dot);
-            row.addView(name);
-            row.addView(percent);
-            categoriesContainer.addView(row);
+        int index = 0;
+        for (Map.Entry<String, Integer> entry : counts.entrySet()) {
+            int percent = tasks.isEmpty() ? 0 : entry.getValue() * 100 / tasks.size();
+            addCategoryRow(entry.getKey(), percent, index++);
         }
     }
 
-    private void renderFocusCard() {
+    private void addCategoryRow(String category, int percentValue, int index) {
+        LinearLayout row = new LinearLayout(getActivity());
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        rowParams.topMargin = dp(index == 0 ? 0 : 14);
+        row.setLayoutParams(rowParams);
+
+        View dot = new View(getActivity());
+        GradientDrawable shape = new GradientDrawable();
+        shape.setShape(GradientDrawable.OVAL);
+        shape.setColor(CATEGORY_COLORS[index % CATEGORY_COLORS.length]);
+        dot.setBackground(shape);
+        LinearLayout.LayoutParams dotParams = new LinearLayout.LayoutParams(dp(10), dp(10));
+        dotParams.setMarginEnd(dp(12));
+        dot.setLayoutParams(dotParams);
+
+        TextView name = new TextView(getActivity());
+        name.setText(category);
+        name.setTextColor(DARK);
+        name.setTextSize(13);
+        name.setLayoutParams(new LinearLayout.LayoutParams(
+                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+
+        TextView percent = new TextView(getActivity());
+        percent.setText(percentValue + "%");
+        percent.setTextColor(MUTED);
+        percent.setTextSize(12);
+
+        row.addView(dot);
+        row.addView(name);
+        row.addView(percent);
+        categoriesContainer.addView(row);
+    }
+
+    private void renderFocusCard(List<Task> tasks) {
         View card = findViewById(R.id.focusCard);
         GradientDrawable gradient = new GradientDrawable(
                 GradientDrawable.Orientation.LEFT_RIGHT, new int[]{BLUE_DARK, BLUE});
         gradient.setCornerRadius(dp(16));
         card.setBackground(gradient);
-        ((TextView) findViewById(R.id.focusTimeText)).setText(BEST_FOCUS_TIME);
+
+        int[] tasksPerHour = new int[24];
+        for (Task task : tasks) {
+            int hour = task.minutes / 60;
+            if (hour >= 0 && hour < tasksPerHour.length) tasksPerHour[hour]++;
+        }
+
+        int busiestHour = -1;
+        for (int hour = 0; hour < tasksPerHour.length; hour++) {
+            if (tasksPerHour[hour] > 0
+                    && (busiestHour == -1 || tasksPerHour[hour] > tasksPerHour[busiestHour])) {
+                busiestHour = hour;
+            }
+        }
+
+        String timeText = busiestHour == -1
+                ? "No tasks yet"
+                : String.format(Locale.US, "%02d:00–%02d:00",
+                        busiestHour, (busiestHour + 1) % 24);
+        ((TextView) findViewById(R.id.focusTimeText)).setText(timeText);
     }
 
-    // =====================================================================
-    // Utilitaires
-    // =====================================================================
+    private String dateKey(Calendar calendar) {
+        return new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(calendar.getTime());
+    }
 
-    /** Barre arrondie avec dégradé vertical. */
+    /** Creates a rounded vertical gradient for one chart bar. */
     private GradientDrawable barDrawable(int topColor, int bottomColor) {
-        GradientDrawable d = new GradientDrawable(
+        GradientDrawable drawable = new GradientDrawable(
                 GradientDrawable.Orientation.TOP_BOTTOM, new int[]{topColor, bottomColor});
-        d.setCornerRadius(dp(9));
-        return d;
+        drawable.setCornerRadius(dp(9));
+        return drawable;
     }
 
     private int dp(int value) {

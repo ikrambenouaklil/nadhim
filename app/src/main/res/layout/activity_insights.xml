@@ -20,7 +20,7 @@
             android:paddingEnd="20dp"
             android:paddingBottom="20dp">
 
-            <!-- Titre -->
+            <!-- Title -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
                 android:textColor="#64748B"
                 android:textSize="13sp" />
 
-            <!-- Trois cartes de statistiques -->
+            <!-- Three statistics cards -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -95,7 +95,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="On time"
+                        android:text="Completion rate"
                         android:textColor="#64748B"
                         android:textSize="11sp" />
                 </LinearLayout>
@@ -122,18 +122,18 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Focus time"
+                        android:text="Planned hours"
                         android:textColor="#64748B"
                         android:textSize="11sp" />
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Activité de la semaine -->
+            <!-- Tasks scheduled during the current week -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Weekly activity"
+                android:text="Tasks scheduled this week"
                 android:textColor="#172033"
                 android:textSize="17sp"
                 android:textStyle="bold" />
@@ -150,7 +150,7 @@
                 android:paddingEnd="12dp"
                 android:paddingBottom="14dp" />
 
-            <!-- Tâches par catégorie -->
+            <!-- User tasks grouped by category -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -169,7 +169,7 @@
                 android:orientation="vertical"
                 android:padding="16dp" />
 
-            <!-- Meilleur moment de concentration -->
+            <!-- Most common scheduled task start time -->
             <LinearLayout
                 android:id="@+id/focusCard"
                 android:layout_width="match_parent"
@@ -181,7 +181,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="● YOUR BEST FOCUS TIME"
+                    android:text="● MOST COMMON TASK START TIME"
                     android:textColor="#A3E600"
                     android:textSize="10sp"
                     android:textStyle="bold" />

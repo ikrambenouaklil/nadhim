@@ -67,4 +67,5 @@
     <string name="previous">Previous</string>
 
 
+    <string name="no_tasks_today">No tasks planned for today yet.</string>
 </resources>

@@ -2,8 +2,6 @@ package com.example.myapplication;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
@@ -16,10 +14,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,15 +22,12 @@ import java.util.Locale;
 
 public class Calendar extends Fragment {
 
-    // ---- Thème Nadhim (mêmes couleurs qu'avant) ----
+    // ---- Nadhim theme (same colors as before) ----
     private static final int BLUE = Color.rgb(37, 99, 235);
     private static final int BLUE_BORDER = Color.rgb(219, 228, 255);
     private static final int DARK = Color.rgb(51, 65, 85);
     private static final int MUTED = Color.rgb(100, 116, 139);
     private static final int FADED = Color.rgb(203, 213, 225);
-
-    private static final String PREFS = "nadhim_calendar";
-    private static final String KEY_EVENTS = "events";
 
     private static final int MODE_DAY = 0;
     private static final int MODE_WEEK = 1;
@@ -44,12 +35,12 @@ public class Calendar extends Fragment {
 
     private View contentView;
 
-    // ---- Modèle ----
+    // ---- Event model ----
     private static class Event {
         long id;
         String date;      // yyyy-MM-dd
-        int minutes;      // minutes depuis minuit
-        int duration;     // en minutes
+        int minutes;      // minutes since midnight
+        int duration;     // in minutes
         String title;
 
         Event(long id, String date, int minutes, int duration, String title) {
@@ -75,7 +66,7 @@ public class Calendar extends Fragment {
     private TextView monthTab;
 
     // =====================================================================
-    // Cycle de vie
+    // Lifecycle
     // =====================================================================
 
     @Override
@@ -92,7 +83,7 @@ public class Calendar extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        loadEvents();   // recharge si l'écran Add a ajouté des événements
+        loadEvents();   // Reload in case the Add screen added events
         renderAll();
     }
 
@@ -147,7 +138,7 @@ public class Calendar extends Fragment {
     }
 
     // =====================================================================
-    // Affichage
+    // Display
     // =====================================================================
 
     private void renderAll() {
@@ -189,7 +180,7 @@ public class Calendar extends Fragment {
     private void renderMonthGrid() {
         monthGrid.removeAllViews();
 
-        // En-tête : M T W T F S S
+        // Header: M T W T F S S
         LinearLayout header = new LinearLayout(getActivity());
         header.setOrientation(LinearLayout.HORIZONTAL);
         String[] letters = {"M", "T", "W", "T", "F", "S", "S"};
@@ -382,7 +373,7 @@ public class Calendar extends Fragment {
     }
 
     // =====================================================================
-    // Suppression
+    // Deletion
     // =====================================================================
 
     private void confirmDelete(final Event event) {
@@ -391,7 +382,7 @@ public class Calendar extends Fragment {
                 .setMessage(event.title)
                 .setPositiveButton("Delete", (d, w) -> {
                     events.remove(event);
-                    saveEvents();
+                    new TaskStore(getActivity()).delete(event.id);
                     renderAll();
                     Toast.makeText(getActivity(), "Event deleted", Toast.LENGTH_SHORT).show();
                 })
@@ -400,7 +391,7 @@ public class Calendar extends Fragment {
     }
 
     // =====================================================================
-    // Données (sauvegarde locale SharedPreferences)
+    // TaskStore handles saving and loading tasks from local storage.
     // =====================================================================
 
     private List<Event> eventsFor(String dateKey) {
@@ -414,55 +405,14 @@ public class Calendar extends Fragment {
 
     private void loadEvents() {
         events.clear();
-        SharedPreferences prefs = getActivity().getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        String raw = prefs.getString(KEY_EVENTS, null);
-        if (raw == null) {
-            seedEvents();
-            saveEvents();
-            return;
+        // Load real tasks from TaskStore and adapt them for the calendar display.
+        for (Task task : new TaskStore(getActivity()).getAll()) {
+            events.add(new Event(task.id, task.date, task.minutes, task.duration, task.title));
         }
-        try {
-            JSONArray array = new JSONArray(raw);
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject o = array.getJSONObject(i);
-                events.add(new Event(o.getLong("id"), o.getString("date"),
-                        o.getInt("minutes"), o.getInt("duration"), o.getString("title")));
-            }
-        } catch (JSONException e) {
-            events.clear();
-        }
-    }
-
-    private void saveEvents() {
-        JSONArray array = new JSONArray();
-        try {
-            for (Event e : events) {
-                JSONObject o = new JSONObject();
-                o.put("id", e.id);
-                o.put("date", e.date);
-                o.put("minutes", e.minutes);
-                o.put("duration", e.duration);
-                o.put("title", e.title);
-                array.put(o);
-            }
-        } catch (JSONException ignored) {
-        }
-        getActivity().getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
-                .putString(KEY_EVENTS, array.toString()).apply();
-    }
-
-    /** Événements d'exemple au premier lancement (ceux de l'ancienne version). */
-    private void seedEvents() {
-        String today = dateKey(java.util.Calendar.getInstance());
-        long id = System.currentTimeMillis();
-        events.add(new Event(id, today, 9 * 60, 30, "Morning planning"));
-        events.add(new Event(id + 1, today, 10 * 60, 45, "Project presentation"));
-        events.add(new Event(id + 2, today, 12 * 60 + 30, 60, "Review lecture notes"));
-        events.add(new Event(id + 3, today, 15 * 60 + 30, 30, "Team check-in"));
     }
 
     // =====================================================================
-    // Utilitaires
+    // Helpers
     // =====================================================================
 
     private java.util.Calendar mondayOf(java.util.Calendar source) {
