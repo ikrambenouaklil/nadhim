@@ -1,6 +1,14 @@
-package com.example.myapplication;
+package com.example.myapplication.ui.calendar;
+import com.example.myapplication.R;
+import com.example.myapplication.ui.main.MainActivity;
+import com.example.myapplication.util.UiUtils;
+import com.example.myapplication.util.DateUtils;
+import com.example.myapplication.data.TaskStore;
+import com.example.myapplication.data.Task;
+import com.example.myapplication.ui.dialog.TaskEditorDialog;
+import com.example.myapplication.ui.dialog.TaskDialogs;
+import com.example.myapplication.data.Priority;
 
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -22,7 +30,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-public class Calendar extends Fragment {
+public class CalendarFragment extends Fragment {
 
     // ---- Nadhim theme (same colors as before) ----
     private int BLUE;
@@ -39,7 +47,7 @@ public class Calendar extends Fragment {
 
     public void showDate(String dateKey) {
         try {
-            java.util.Date date = new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(dateKey);
+            java.util.Date date = DateUtils.parseDateKey(dateKey);
             if (date != null) {
                 selectedDate.setTime(date);
                 if (contentView != null) renderAll();
@@ -47,16 +55,7 @@ public class Calendar extends Fragment {
         } catch (java.text.ParseException ignored) { }
     }
 
-    // ---- Event model ----
-    private static class Event {
-        final Task task;
-
-        Event(Task task) {
-            this.task = task;
-        }
-    }
-
-    private final List<Event> events = new ArrayList<>();
+    private final List<Task> events = new ArrayList<>();
     private final java.util.Calendar selectedDate = java.util.Calendar.getInstance();
     private int mode = MODE_DAY;
 
@@ -77,7 +76,7 @@ public class Calendar extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        contentView = inflater.inflate(R.layout.activity_calendar, container, false);
+        contentView = inflater.inflate(R.layout.fragment_calendar, container, false);
         BLUE = getActivity().getColor(R.color.brand_blue);
         BLUE_BORDER = getActivity().getColor(R.color.brand_blue_border);
         DARK = getActivity().getColor(R.color.insight_dark);
@@ -107,15 +106,15 @@ public class Calendar extends Fragment {
     }
 
     private void bindViews() {
-        weekDaysContainer = findViewById(R.id.weekDaysContainer);
-        monthGrid = findViewById(R.id.monthGrid);
-        agendaContainer = findViewById(R.id.agendaContainer);
-        calendarMonthText = findViewById(R.id.calendarMonthText);
-        agendaDateText = findViewById(R.id.agendaDateText);
-        dayTab = findViewById(R.id.dayTab);
-        weekTab = findViewById(R.id.weekTab);
-        monthTab = findViewById(R.id.monthTab);
-        addTaskToDateButton = findViewById(R.id.addTaskToDateButton);
+        weekDaysContainer = contentView.findViewById(R.id.weekDaysContainer);
+        monthGrid = contentView.findViewById(R.id.monthGrid);
+        agendaContainer = contentView.findViewById(R.id.agendaContainer);
+        calendarMonthText = contentView.findViewById(R.id.calendarMonthText);
+        agendaDateText = contentView.findViewById(R.id.agendaDateText);
+        dayTab = contentView.findViewById(R.id.dayTab);
+        weekTab = contentView.findViewById(R.id.weekTab);
+        monthTab = contentView.findViewById(R.id.monthTab);
+        addTaskToDateButton = contentView.findViewById(R.id.addTaskToDateButton);
     }
 
     private void attachListeners() {
@@ -123,10 +122,10 @@ public class Calendar extends Fragment {
         weekTab.setOnClickListener(v -> setMode(MODE_WEEK));
         monthTab.setOnClickListener(v -> setMode(MODE_MONTH));
 
-        findViewById(R.id.prevButton).setOnClickListener(v -> shift(-1));
-        findViewById(R.id.nextButton).setOnClickListener(v -> shift(1));
+        contentView.findViewById(R.id.prevButton).setOnClickListener(v -> shift(-1));
+        contentView.findViewById(R.id.nextButton).setOnClickListener(v -> shift(1));
         addTaskToDateButton.setOnClickListener(v ->
-                ((MainActivity) getActivity()).showAddTaskForDate(dateKey(selectedDate)));
+                ((MainActivity) getActivity()).showAddTaskForDate(DateUtils.dateKey(selectedDate)));
 
     }
 
@@ -218,7 +217,7 @@ public class Calendar extends Fragment {
         final java.util.Calendar date = (java.util.Calendar) source.clone();
         boolean selected = sameDate(date, selectedDate);
         boolean today = sameDate(date, java.util.Calendar.getInstance());
-        boolean hasEvents = !eventsFor(dateKey(date)).isEmpty();
+        boolean hasEvents = !eventsFor(DateUtils.dateKey(date)).isEmpty();
         LinearLayout cell = (LinearLayout) LayoutInflater.from(getActivity())
                 .inflate(R.layout.item_calendar_day, weekDaysContainer, false);
         TextView weekday = cell.findViewById(R.id.calendarDayWeekday);
@@ -233,8 +232,8 @@ public class Calendar extends Fragment {
                 : today ? R.drawable.bg_calendar_day_today : 0);
         dot.setBackgroundResource(selected ? R.drawable.bg_calendar_dot_selected : R.drawable.bg_calendar_dot);
         dot.setVisibility(hasEvents ? View.VISIBLE : View.INVISIBLE);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, dp(heightDp), 1);
-        params.setMargins(dp(2), dp(2), dp(2), dp(2));
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, UiUtils.dp(getActivity(), heightDp), 1);
+        params.setMargins(UiUtils.dp(getActivity(), 2), UiUtils.dp(getActivity(), 2), UiUtils.dp(getActivity(), 2), UiUtils.dp(getActivity(), 2));
         cell.setLayoutParams(params);
         cell.setOnClickListener(v -> {
             selectedDate.setTimeInMillis(date.getTimeInMillis());
@@ -265,7 +264,7 @@ public class Calendar extends Fragment {
 
     private void addDaySection(java.util.Calendar source, boolean withHeader) {
         final java.util.Calendar date = (java.util.Calendar) source.clone();
-        List<Event> list = eventsFor(dateKey(date));
+        List<Task> list = eventsFor(DateUtils.dateKey(date));
 
         if (withHeader) {
             TextView header = (TextView) LayoutInflater.from(getActivity())
@@ -287,12 +286,12 @@ public class Calendar extends Fragment {
             agendaContainer.addView(empty);
             return;
         }
-        for (Event event : list) {
-            agendaContainer.addView(createEventRow(event));
+        for (Task task : list) {
+            agendaContainer.addView(createEventRow(task));
         }
     }
 
-    private View createEventRow(final Event event) {
+    private View createEventRow(final Task task) {
         View row = LayoutInflater.from(getActivity())
                 .inflate(R.layout.item_calendar_event, agendaContainer, false);
         CheckBox checkBox = row.findViewById(R.id.calendarEventCheck);
@@ -302,25 +301,28 @@ public class Calendar extends Fragment {
         TextView details = row.findViewById(R.id.calendarEventDetails);
         ImageButton editButton = row.findViewById(R.id.calendarEventEdit);
         ImageButton deleteButton = row.findViewById(R.id.calendarEventDelete);
-        checkBox.setContentDescription("Mark " + event.task.title + " complete");
-        checkBox.setChecked(event.task.done);
-        time.setText(time(event.task.minutes));
-        title.setText(event.task.title);
-        title.setTextColor(event.task.done ? MUTED : DARK);
-        if (event.task.done) title.setPaintFlags(title.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
-        details.setText(time(event.task.minutes) + " – " + time(event.task.minutes + event.task.duration)
-                + "  ·  " + event.task.duration + " min");
-        priorityBar.setBackgroundColor(priorityColor(event.task.priority));
-        editButton.setContentDescription("Edit task " + event.task.title);
-        editButton.setOnClickListener(v -> editTask(event.task));
-        deleteButton.setContentDescription("Delete task " + event.task.title);
-        deleteButton.setOnClickListener(v -> confirmDelete(event));
+        checkBox.setContentDescription("Mark " + task.title + " complete");
+        checkBox.setChecked(task.done);
+        time.setText(DateUtils.formatTime(task.minutes));
+        title.setText(task.title);
+        title.setTextColor(task.done ? MUTED : DARK);
+        if (task.done) title.setPaintFlags(title.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
+        details.setText(DateUtils.formatTime(task.minutes) + " – " + DateUtils.formatTime(task.minutes + task.duration)
+                + "  ·  " + DateUtils.formatDuration(task.duration));
+        priorityBar.setBackgroundColor(priorityColor(task.priority));
+        editButton.setContentDescription("Edit task " + task.title);
+        editButton.setOnClickListener(v -> editTask(task));
+        deleteButton.setContentDescription("Delete task " + task.title);
+        deleteButton.setOnClickListener(v -> TaskDialogs.confirmDelete(getActivity(), task, () -> {
+            events.remove(task);
+            renderAll();
+        }));
 
         CompoundButton.OnCheckedChangeListener[] listenerHolder = new CompoundButton.OnCheckedChangeListener[1];
         listenerHolder[0] = (button, checked) -> {
-            boolean previous = event.task.done;
-            event.task.done = checked;
-            if (!new TaskStore(getActivity()).update(event.task)) {
+            boolean previous = task.done;
+            task.done = checked;
+            if (!new TaskStore(getActivity()).update(task)) {
                 checkBox.setOnCheckedChangeListener(null);
                 checkBox.setChecked(previous);
                 checkBox.setOnCheckedChangeListener(listenerHolder[0]);
@@ -336,11 +338,11 @@ public class Calendar extends Fragment {
         return row;
     }
 
-    private int priorityColor(String priority) {
-        if (priority == null) return MUTED;
-        if ("HIGH".equalsIgnoreCase(priority)) return getActivity().getColor(R.color.brand_blue);
-        if ("LOW".equalsIgnoreCase(priority)) return getActivity().getColor(R.color.accent_green);
-        if ("MEDIUM".equalsIgnoreCase(priority)) return getActivity().getColor(R.color.brand_blue_mid);
+    private int priorityColor(String value) {
+        Priority priority = Priority.fromString(value);
+        if (priority == Priority.HIGH) return getActivity().getColor(R.color.brand_blue);
+        if (priority == Priority.MEDIUM) return getActivity().getColor(R.color.brand_blue_mid);
+        if (priority == Priority.LOW) return getActivity().getColor(R.color.accent_green);
         return MUTED;
     }
 
@@ -354,42 +356,22 @@ public class Calendar extends Fragment {
     // Deletion
     // =====================================================================
 
-    private void confirmDelete(final Event event) {
-        new AlertDialog.Builder(getActivity())
-                .setTitle("Delete task?")
-                .setMessage(event.task.title)
-                .setPositiveButton("Delete", (dialog, which) -> {
-                    if (!new TaskStore(getActivity()).delete(event.task.id)) {
-                        Toast.makeText(getActivity(), "Could not delete task", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    events.remove(event);
-                    renderAll();
-                    Toast.makeText(getActivity(), "Task deleted", Toast.LENGTH_SHORT).show();
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
-    }
-
     // =====================================================================
     // TaskStore handles saving and loading tasks from local storage.
     // =====================================================================
 
-    private List<Event> eventsFor(String dateKey) {
-        List<Event> result = new ArrayList<>();
-        for (Event e : events) {
-            if (e.task.date.equals(dateKey)) result.add(e);
+    private List<Task> eventsFor(String dateKey) {
+        List<Task> result = new ArrayList<>();
+        for (Task task : events) {
+            if (task.date.equals(dateKey)) result.add(task);
         }
-        Collections.sort(result, (a, b) -> Integer.compare(a.task.minutes, b.task.minutes));
+        Collections.sort(result, (a, b) -> Integer.compare(a.minutes, b.minutes));
         return result;
     }
 
     private void loadEvents() {
         events.clear();
-        // Load real tasks from TaskStore and adapt them for the calendar display.
-        for (Task task : new TaskStore(getActivity()).getAll()) {
-            events.add(new Event(task));
-        }
+        events.addAll(new TaskStore(getActivity()).getAll());
     }
 
     // =====================================================================
@@ -407,25 +389,9 @@ public class Calendar extends Fragment {
         return new SimpleDateFormat(pattern, Locale.ENGLISH).format(c.getTime());
     }
 
-    private String dateKey(java.util.Calendar c) {
-        return new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(c.getTime());
-    }
-
-    private static String time(int totalMinutes) {
-        int m = totalMinutes % (24 * 60);
-        return String.format(Locale.US, "%02d:%02d", m / 60, m % 60);
-    }
-
     private boolean sameDate(java.util.Calendar a, java.util.Calendar b) {
         return a.get(java.util.Calendar.YEAR) == b.get(java.util.Calendar.YEAR)
                 && a.get(java.util.Calendar.DAY_OF_YEAR) == b.get(java.util.Calendar.DAY_OF_YEAR);
     }
 
-    private int dp(int value) {
-        return Math.round(value * getActivity().getResources().getDisplayMetrics().density);
-    }
-
-    private <T extends View> T findViewById(int id) {
-        return contentView.findViewById(id);
-    }
 }

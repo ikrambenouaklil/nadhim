@@ -1,7 +1,15 @@
-package com.example.myapplication;
+package com.example.myapplication.ui.today;
+import com.example.myapplication.R;
+import com.example.myapplication.ui.main.MainActivity;
+import com.example.myapplication.data.TaskStore;
+import com.example.myapplication.data.Task;
+import com.example.myapplication.ui.dialog.TaskEditorDialog;
+import com.example.myapplication.ui.dialog.TaskDialogs;
+import com.example.myapplication.data.Priority;
+import com.example.myapplication.util.DateUtils;
+import com.example.myapplication.data.SessionManager;
 
 import android.app.Fragment;
-import android.app.AlertDialog;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -32,9 +40,9 @@ public class TodayFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        contentView = inflater.inflate(R.layout.activity_main, container, false);
-        tasksContainer = findViewById(R.id.todayTasksContainer);
-        emptyTasksMessage = findViewById(R.id.todayTasksEmpty);
+        contentView = inflater.inflate(R.layout.fragment_today, container, false);
+        tasksContainer = contentView.findViewById(R.id.todayTasksContainer);
+        emptyTasksMessage = contentView.findViewById(R.id.todayTasksEmpty);
 
         showGreeting();
         showTodayDate();
@@ -73,13 +81,13 @@ public class TodayFragment extends Fragment {
             greetingText = R.string.greeting_evening;
         }
 
-        String name = WelcomeActivity.getSavedName(getActivity());
+        String name = SessionManager.getName(getActivity());
         name = name == null ? "" : name.trim();
 
-        TextView greeting = findViewById(R.id.greeting);
+        TextView greeting = contentView.findViewById(R.id.greeting);
         greeting.setText(getString(greetingText, name));
 
-        TextView avatar = findViewById(R.id.avatar);
+        TextView avatar = contentView.findViewById(R.id.avatar);
         if (avatar != null) {
             avatar.setText(name.isEmpty() ? "" : name.substring(0, 1).toUpperCase(Locale.ENGLISH));
         }
@@ -87,12 +95,12 @@ public class TodayFragment extends Fragment {
 
     private void showTodayDate() {
         String today = new SimpleDateFormat("EEEE, MMMM d", Locale.ENGLISH).format(new Date());
-        TextView date = findViewById(R.id.date);
+        TextView date = contentView.findViewById(R.id.date);
         date.setText(getString(R.string.date_subtitle, today));
     }
 
     private void loadTodaysTasks() {
-        String todayKey = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
+        String todayKey = DateUtils.todayKey();
         todaysTasks.clear();
 
         // Keep today's tasks visible and carry unfinished overdue tasks forward.
@@ -124,10 +132,10 @@ public class TodayFragment extends Fragment {
         ImageButton deleteButton = row.findViewById(R.id.todayTaskDelete);
 
         title.setText(task.title);
-        boolean overdue = task.date.compareTo(new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date())) < 0 && !task.done;
-        String schedule = formatTime(task.minutes) + " – "
-                + formatTime(task.minutes + task.duration) + "  ·  " + task.duration + " min";
-        time.setText(overdue ? "Overdue · " + formatDate(task.date) + " · " + schedule : schedule);
+        boolean overdue = task.date.compareTo(DateUtils.todayKey()) < 0 && !task.done;
+        String schedule = DateUtils.formatTime(task.minutes) + " – "
+                + DateUtils.formatTime(task.minutes + task.duration) + "  ·  " + DateUtils.formatDuration(task.duration);
+        time.setText(overdue ? "Overdue · " + DateUtils.formatShort(task.date) + " · " + schedule : schedule);
         showPriority(priority, task.priority);
 
         checkBox.setContentDescription(task.title);
@@ -137,7 +145,7 @@ public class TodayFragment extends Fragment {
         updateTitleStyle(title, task.done);
         checkBox.setOnCheckedChangeListener((button, isChecked) -> saveTaskStatus(task, checkBox, title, isChecked));
         editButton.setOnClickListener(v -> TaskEditorDialog.show(getActivity(), task, this::loadTodaysTasks));
-        deleteButton.setOnClickListener(v -> confirmDelete(task));
+        deleteButton.setOnClickListener(v -> TaskDialogs.confirmDelete(getActivity(), task, this::loadTodaysTasks));
         tasksContainer.addView(row);
     }
 
@@ -156,34 +164,18 @@ public class TodayFragment extends Fragment {
         updateProgress();
     }
 
-    private void confirmDelete(Task task) {
-        new AlertDialog.Builder(getActivity())
-                .setTitle("Delete task?")
-                .setMessage(task.title)
-                .setPositiveButton("Delete", (dialog, which) -> {
-                    if (!new TaskStore(getActivity()).delete(task.id)) {
-                        Toast.makeText(getActivity(), "Could not delete task", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    Toast.makeText(getActivity(), "Task deleted", Toast.LENGTH_SHORT).show();
-                    loadTodaysTasks();
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
-    }
-
     private void showPriority(TextView badge, String value) {
-        String priority = value == null ? "" : value.trim();
-        if (priority.isEmpty()) {
+        Priority priority = Priority.fromString(value);
+        if (priority == Priority.NONE) {
             badge.setVisibility(View.GONE);
             return;
         }
 
         badge.setVisibility(View.VISIBLE);
-        badge.setText(priority.toUpperCase(Locale.ENGLISH));
-        if ("HIGH".equalsIgnoreCase(priority)) {
+        badge.setText(priority.name());
+        if (priority == Priority.HIGH) {
             badge.setBackgroundResource(R.drawable.bg_badge_high);
-        } else if ("LOW".equalsIgnoreCase(priority)) {
+        } else if (priority == Priority.LOW) {
             badge.setBackgroundResource(R.drawable.bg_badge_low);
             badge.setTextColor(getActivity().getColor(R.color.text_primary));
         } else {
@@ -202,7 +194,7 @@ public class TodayFragment extends Fragment {
     }
 
     private void updateProgress() {
-        String todayKey = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
+        String todayKey = DateUtils.todayKey();
         int completed = 0;
         int total = 0;
         for (Task task : todaysTasks) {
@@ -213,29 +205,12 @@ public class TodayFragment extends Fragment {
         }
 
         int percent = total == 0 ? 0 : (completed * 100) / total;
-        TextView subtitle = findViewById(R.id.progress_subtitle);
-        TextView percentText = findViewById(R.id.progress_percent);
-        ProgressBar bar = findViewById(R.id.progress_bar);
+        TextView subtitle = contentView.findViewById(R.id.progress_subtitle);
+        TextView percentText = contentView.findViewById(R.id.progress_percent);
+        ProgressBar bar = contentView.findViewById(R.id.progress_bar);
         subtitle.setText(getString(R.string.tasks_completed, completed, total));
         percentText.setText(getString(R.string.percent, percent));
         bar.setProgress(percent);
     }
 
-    private String formatDate(String dateKey) {
-        try {
-            Date date = new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(dateKey);
-            return new SimpleDateFormat("MMM d", Locale.ENGLISH).format(date);
-        } catch (java.text.ParseException | NullPointerException ignored) {
-            return dateKey;
-        }
-    }
-    private String formatTime(int totalMinutes) {
-        int minutesInDay = 24 * 60;
-        int safeMinutes = ((totalMinutes % minutesInDay) + minutesInDay) % minutesInDay;
-        return String.format(Locale.US, "%02d:%02d", safeMinutes / 60, safeMinutes % 60);
-    }
-
-    private <T extends View> T findViewById(int id) {
-        return contentView.findViewById(id);
-    }
 }

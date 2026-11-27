@@ -1,33 +1,23 @@
-package com.example.myapplication;
+package com.example.myapplication.ui.auth;
+import com.example.myapplication.R;
+import com.example.myapplication.ui.main.MainActivity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import com.example.myapplication.data.AccountStore;
+import com.example.myapplication.data.SessionManager;
+
 public class WelcomeActivity extends Activity {
 
-    private static final String PREFERENCES = "nadhim_preferences";
-    private static final String NAME_KEY = "name";
-    private static final String EMAIL_KEY = "email";
-
-    public static String getSavedName(Context context) {
-        return context.getSharedPreferences(PREFERENCES, context.MODE_PRIVATE)
-                .getString(NAME_KEY, "");
-    }
-    public  static String getSavedEmail(Context context){
-
-        return context.getSharedPreferences(PREFERENCES, context.MODE_PRIVATE)
-                .getString( EMAIL_KEY,"");
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // 1. Check if a user is already logged in
-        String savedName = getSavedName(this);
+        String savedName = SessionManager.getName(this);
 
         if (!savedName.trim().isEmpty()) {
             openMainScreen();
@@ -35,10 +25,7 @@ public class WelcomeActivity extends Activity {
         }
 
         // 2. Check if an account already exists
-        SharedPreferences accounts =
-                getSharedPreferences("nadhim_accounts", MODE_PRIVATE);
-
-        if (!accounts.getAll().isEmpty()) {
+        if (new AccountStore(this).hasAccounts()) {
             openLoginScreen();
             return;
         }

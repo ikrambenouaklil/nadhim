@@ -1,8 +1,8 @@
-package com.example.myapplication;
+package com.example.myapplication.ui.auth;
+import com.example.myapplication.R;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
@@ -10,31 +10,12 @@ import android.widget.ImageButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.myapplication.data.AccountStore;
+import com.example.myapplication.data.SessionManager;
+import com.example.myapplication.util.PasswordHasher;
+import com.example.myapplication.ui.main.MainActivity;
+
 public class RegisterActivity extends Activity {
-
-    private String hashPassword(String password) throws Exception {
-        byte[] salt = new byte[16];
-        java.security.SecureRandom random = new java.security.SecureRandom();
-        random.nextBytes(salt);
-
-        javax.crypto.SecretKeyFactory factory =
-                javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-
-        javax.crypto.spec.PBEKeySpec spec =
-                new javax.crypto.spec.PBEKeySpec(
-                        password.toCharArray(),
-                        salt,
-                        600000,
-                        256
-                );
-
-        byte[] hash = factory.generateSecret(spec).getEncoded();
-        spec.clearPassword();
-
-        return android.util.Base64.encodeToString(salt, android.util.Base64.NO_WRAP)
-                + ":"
-                + android.util.Base64.encodeToString(hash, android.util.Base64.NO_WRAP);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,38 +50,23 @@ public class RegisterActivity extends Activity {
                 Toast.makeText(this, "Complete all fields", Toast.LENGTH_SHORT).show();
                 return;
             }
-            // i created a shared P named nadhim accounts and i'll add the user infos to it
-            SharedPreferences sp = getSharedPreferences("nadhim_accounts", MODE_PRIVATE);
-
             String e = email.getText().toString().trim();
-            String p ;
-            // hashing password
-            try {
-                p = hashPassword(password.getText().toString());
-            } catch (Exception ex) {
-                ex.printStackTrace(); // print Exception details  in logcat
-
+            AccountStore accounts = new AccountStore(this);
+            if (accounts.exists(e)) {
+                Toast.makeText(this, "user already exists ", Toast.LENGTH_SHORT).show();
                 return;
             }
-            String key = e + ".password";
 
-             // check if the user already exists
-            if(sp.contains(key)){
-                Toast.makeText(this , "user already exists ", Toast.LENGTH_SHORT).show();
-                return ;}
-
-             // "ikram@gmail.com.password" : real password
-            //  "ikram@gmail.com.name" : user  name
-            sp.edit().putString(e+".password",p)
-                    .putString(e+".name",name.getText().toString().trim()).apply();
-
+            String passwordHash;
+            try {
+                passwordHash = PasswordHasher.hash(password.getText().toString());
+            } catch (Exception ex) {
+                Toast.makeText(this, "Could not secure the password", Toast.LENGTH_SHORT).show();
+                return;
+            }
             String userName = name.getText().toString().trim();
-
-            getSharedPreferences("nadhim_preferences", MODE_PRIVATE)
-                    .edit()
-                    .putString("name", userName)
-                    .putString("email",e )
-                    .apply();
+            accounts.save(e, userName, passwordHash);
+            SessionManager.save(this, userName, e);
 
                // once i completed the next interface is main Activity
             startActivity(new Intent(this, MainActivity.class));

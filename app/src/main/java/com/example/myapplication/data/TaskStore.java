@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -29,7 +29,7 @@ public class TaskStore {
         );
 
         // Each email gets its own key, keeping user task lists separate.
-        String email = WelcomeActivity.getSavedEmail(context);
+        String email = SessionManager.getEmail(context);
         userTasksKey = email == null || email.trim().isEmpty()
                 ? null
                 : TASKS_KEY_PREFIX + email.trim();

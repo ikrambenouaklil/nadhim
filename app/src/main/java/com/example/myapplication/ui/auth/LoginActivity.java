@@ -1,8 +1,8 @@
-package com.example.myapplication;
+package com.example.myapplication.ui.auth;
+import com.example.myapplication.R;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
@@ -11,8 +11,12 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 
+import com.example.myapplication.data.AccountStore;
+import com.example.myapplication.data.SessionManager;
+import com.example.myapplication.util.PasswordHasher;
+import com.example.myapplication.ui.main.MainActivity;
+
 public class LoginActivity extends Activity {
-    SharedPreferences sp ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,13 +62,10 @@ public class LoginActivity extends Activity {
                 return;
             }
          // 1. check is the email exists
-            sp = getSharedPreferences("nadhim_accounts",MODE_PRIVATE);
-
             String e = email.getText().toString().trim();   // email
-
             String enteredPassword = password.getText().toString();// the password that the user entred
-
-            String storedValue  = sp.getString(e + ".password" , null )  ; // the stored Value of password
+            AccountStore accounts = new AccountStore(this);
+            String storedValue = accounts.getPasswordHash(e);
 
            if ( storedValue == null ){ // check if the email exists
                Toast.makeText(this , " user not exists ",Toast.LENGTH_SHORT).show();
@@ -75,7 +76,7 @@ public class LoginActivity extends Activity {
 
             boolean correct ;
             try {
-                correct = verifyPassword(enteredPassword, storedValue);
+                correct = PasswordHasher.verify(enteredPassword, storedValue);
             } catch (Exception ex) {
                 ex.printStackTrace();
                 return;
@@ -87,13 +88,8 @@ public class LoginActivity extends Activity {
             }
 
             // save user name to pass it to the main activity
-            String userName = sp.getString(e + ".name", "");
-
-            getSharedPreferences("nadhim_preferences", MODE_PRIVATE)
-                    .edit()
-                    .putString("name", userName)
-                    .putString("email", e)
-                    .apply();
+            String userName = accounts.getName(e);
+            SessionManager.save(this, userName, e);
             //  3. forward user to main activity
             startActivity(new Intent(this, MainActivity.class));
             finish();
@@ -109,42 +105,5 @@ public class LoginActivity extends Activity {
                         Toast.LENGTH_LONG).show());
         findViewById(R.id.loginSignUp).setOnClickListener(view ->
                 startActivity(new Intent(this, RegisterActivity.class)));
-    }
-
-
-     // check if the password is correct
-    private boolean verifyPassword(String password, String storedValue) throws Exception {
-
-        // Separate the salt and the hash
-        String[] parts = storedValue.split(":");
-
-        if (parts.length != 2) {
-            return false;
-        }
-
-        // Decode the stored salt and hash
-        byte[] salt = android.util.Base64.decode(
-                parts[0], android.util.Base64.NO_WRAP);
-
-        byte[] savedHash = android.util.Base64.decode(
-                parts[1], android.util.Base64.NO_WRAP);
-
-        // Recreate the hash using the entered password and saved salt
-        javax.crypto.SecretKeyFactory factory =
-                javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-
-        javax.crypto.spec.PBEKeySpec spec =
-                new javax.crypto.spec.PBEKeySpec(
-                        password.toCharArray(),
-                        salt,
-                        600000,
-                        256
-                );
-
-        byte[] newHash = factory.generateSecret(spec).getEncoded();
-        spec.clearPassword();
-
-        // Compare the two hashes
-        return java.security.MessageDigest.isEqual(savedHash, newHash);
     }
 }

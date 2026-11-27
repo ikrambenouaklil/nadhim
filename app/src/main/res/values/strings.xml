@@ -10,11 +10,6 @@
     <string name="profile_description">Profile</string>
 
     <!-- Welcome screen (shown only the first time) -->
-    <string name="welcome_title">Welcome to Nadhim 👋</string>
-    <string name="welcome_subtitle">What should we call you?</string>
-    <string name="name_hint">Your name</string>
-    <string name="welcome_continue">Continue</string>
-    <string name="name_required">Please enter your name</string>
     <string name="show_password">Show password</string>
     <string name="hide_password">Hide password</string>
     <string name="forgot_password_title">Password recovery</string>
@@ -34,15 +29,6 @@
 
     <!-- Priorities -->
     <string name="your_priorities">Your priorities</string>
-    <string name="task1_title">Finish project proposal</string>
-    <string name="task1_time">10:00 – 11:30</string>
-    <string name="task2_title">Review lecture notes</string>
-    <string name="task2_time">13:00 – 14:00</string>
-    <string name="task3_title">Plan weekly meals</string>
-    <string name="task3_time">17:00 – 17:30</string>
-    <string name="priority_high">HIGH</string>
-    <string name="priority_med">MED</string>
-    <string name="priority_low">LOW</string>
 
     <!-- Nadhim suggestion card -->
     <string name="suggestion_label">✦  NADHIM SUGGESTS</string>
@@ -58,13 +44,7 @@
     <string name="nav_add">Add</string>
     <string name="nav_insights_icon">◔</string>
     <string name="nav_insights">Insights</string>
-    <string name="coming_soon">%1$s screen coming soon</string>
-    <string name="already_on_today">You are on the Today screen</string>
     <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
 
 
     <string name="no_tasks_today">No tasks planned for today yet.</string>

@@ -1,4 +1,11 @@
-package com.example.myapplication;
+package com.example.myapplication.ui.addtask;
+import com.example.myapplication.R;
+import com.example.myapplication.ui.main.MainActivity;
+import com.example.myapplication.util.UiUtils;
+import com.example.myapplication.util.DateUtils;
+import com.example.myapplication.data.TaskStore;
+import com.example.myapplication.data.Task;
+import com.example.myapplication.data.Priority;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -20,7 +27,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.Locale;
 
-public class AddTask extends Fragment {
+public class AddTaskFragment extends Fragment {
     private static final int REQUEST_REVIEW = 51;
     private static final String EXTRA_TASK = "review_task";
     private int BLUE;
@@ -40,11 +47,11 @@ public class AddTask extends Fragment {
     private boolean dateSet;
     private boolean timeSet;
     private int duration = 30;
-    private String priority = "MEDIUM";
+    private Priority priority = Priority.MEDIUM;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        contentView = inflater.inflate(R.layout.activity_add_task, container, false);
+        contentView = inflater.inflate(R.layout.fragment_add_task, container, false);
         BLUE = getActivity().getColor(R.color.brand_blue);
         BLUE_CHIP = getActivity().getColor(R.color.brand_blue_pale);
         DARK = getActivity().getColor(R.color.text_primary);
@@ -57,43 +64,43 @@ public class AddTask extends Fragment {
     }
 
     private void bindViews() {
-        descriptionInput = findViewById(R.id.descriptionInput);
-        detailsInput = findViewById(R.id.detailsInput);
-        dateText = findViewById(R.id.deadlineDateField);
-        timeText = findViewById(R.id.deadlineTimeField);
-        durationText = findViewById(R.id.durationText);
-        priorityLow = findViewById(R.id.priorityLow);
-        priorityMedium = findViewById(R.id.priorityMedium);
-        priorityHigh = findViewById(R.id.priorityHigh);
+        descriptionInput = contentView.findViewById(R.id.descriptionInput);
+        detailsInput = contentView.findViewById(R.id.detailsInput);
+        dateText = contentView.findViewById(R.id.deadlineDateField);
+        timeText = contentView.findViewById(R.id.deadlineTimeField);
+        durationText = contentView.findViewById(R.id.durationText);
+        priorityLow = contentView.findViewById(R.id.priorityLow);
+        priorityMedium = contentView.findViewById(R.id.priorityMedium);
+        priorityHigh = contentView.findViewById(R.id.priorityHigh);
     }
 
-    void setInitialDate(String dateKey) {
+    public void setInitialDate(String dateKey) {
         if (dateKey == null || contentView == null) return;
         try {
-            Date date = new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(dateKey);
+            Date date = DateUtils.parseDateKey(dateKey);
             if (date == null) return;
             deadline.setTime(date);
             dateSet = true;
-            dateText.setText(new SimpleDateFormat("EEE, MMM d, yyyy", Locale.ENGLISH).format(deadline.getTime()));
+            dateText.setText(DateUtils.formatLong(DateUtils.dateKey(deadline)));
             dateText.setTextColor(DARK);
         } catch (ParseException ignored) { }
     }
 
     private void setupDeadlinePickers() {
-        findViewById(R.id.deadlineDateField).setOnClickListener(v -> {
+        contentView.findViewById(R.id.deadlineDateField).setOnClickListener(v -> {
             DatePickerDialog dialog = new DatePickerDialog(getActivity(), (picker, year, month, day) -> {
                 deadline.set(java.util.Calendar.YEAR, year);
                 deadline.set(java.util.Calendar.MONTH, month);
                 deadline.set(java.util.Calendar.DAY_OF_MONTH, day);
                 dateSet = true;
-                dateText.setText(new SimpleDateFormat("EEE, MMM d, yyyy", Locale.ENGLISH).format(deadline.getTime()));
+                dateText.setText(DateUtils.formatLong(DateUtils.dateKey(deadline)));
                 dateText.setTextColor(DARK);
             }, deadline.get(java.util.Calendar.YEAR), deadline.get(java.util.Calendar.MONTH), deadline.get(java.util.Calendar.DAY_OF_MONTH));
             dialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
             dialog.show();
         });
 
-        findViewById(R.id.deadlineTimeField).setOnClickListener(v ->
+        contentView.findViewById(R.id.deadlineTimeField).setOnClickListener(v ->
                 new TimePickerDialog(getActivity(), (picker, hour, minute) -> {
                     deadline.set(java.util.Calendar.HOUR_OF_DAY, hour);
                     deadline.set(java.util.Calendar.MINUTE, minute);
@@ -104,17 +111,17 @@ public class AddTask extends Fragment {
     }
 
     private void setupPriority() {
-        priorityLow.setOnClickListener(v -> selectPriority("LOW"));
-        priorityMedium.setOnClickListener(v -> selectPriority("MEDIUM"));
-        priorityHigh.setOnClickListener(v -> selectPriority("HIGH"));
+        priorityLow.setOnClickListener(v -> selectPriority(Priority.LOW));
+        priorityMedium.setOnClickListener(v -> selectPriority(Priority.MEDIUM));
+        priorityHigh.setOnClickListener(v -> selectPriority(Priority.HIGH));
         selectPriority(priority);
     }
 
-    private void selectPriority(String value) {
+    private void selectPriority(Priority value) {
         priority = value;
-        styleChip(priorityLow, "LOW".equals(value));
-        styleChip(priorityMedium, "MEDIUM".equals(value));
-        styleChip(priorityHigh, "HIGH".equals(value));
+        styleChip(priorityLow, value == Priority.LOW);
+        styleChip(priorityMedium, value == Priority.MEDIUM);
+        styleChip(priorityHigh, value == Priority.HIGH);
     }
 
     private void setupDurationPicker() {
@@ -161,8 +168,8 @@ public class AddTask extends Fragment {
     }
 
     private void setupSaveButton() {
-        TextView button = findViewById(R.id.saveTaskButton);
-        button.setBackgroundResource(R.drawable.bg_add_task_submit);
+        TextView button = contentView.findViewById(R.id.saveTaskButton);
+        button.setBackgroundResource(R.drawable.bg_primary_button);
         button.setOnClickListener(v -> {
             String title = descriptionInput.getText().toString().trim();
             if (title.isEmpty()) {
@@ -176,9 +183,9 @@ public class AddTask extends Fragment {
             }
 
             Task task = new Task(System.currentTimeMillis(), title,
-                    new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(deadline.getTime()),
+                    DateUtils.dateKey(deadline),
                     deadline.get(java.util.Calendar.HOUR_OF_DAY) * 60 + deadline.get(java.util.Calendar.MINUTE),
-                    duration, detailsInput.getText().toString().trim(), "", priority, false);
+                    duration, detailsInput.getText().toString().trim(), "", priority.storageValue(), false);
             Intent review = new Intent(getActivity(), TaskReviewActivity.class);
             review.putExtra(EXTRA_TASK, task);
             startActivityForResult(review, REQUEST_REVIEW);
@@ -198,7 +205,7 @@ public class AddTask extends Fragment {
         }
 
         resetForm();
-        String today = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new java.util.Date());
+        String today = DateUtils.todayKey();
         if (today.equals(task.date)) {
             Toast.makeText(getActivity(), "Task added to Today", Toast.LENGTH_SHORT).show();
             ((MainActivity) getActivity()).showTodayTab();
@@ -220,13 +227,6 @@ public class AddTask extends Fragment {
         timeText.setTextColor(getActivity().getColor(R.color.text_hint));
         duration = 30;
         updateDurationText();
-        selectPriority("MEDIUM");
-    }
-    private int dp(int value) {
-        return Math.round(value * getActivity().getResources().getDisplayMetrics().density);
-    }
-
-    private <T extends View> T findViewById(int id) {
-        return contentView.findViewById(id);
+        selectPriority(Priority.MEDIUM);
     }
 }

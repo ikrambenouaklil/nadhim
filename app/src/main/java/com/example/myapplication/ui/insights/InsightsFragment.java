@@ -1,4 +1,10 @@
-package com.example.myapplication;
+package com.example.myapplication.ui.insights;
+import com.example.myapplication.R;
+import com.example.myapplication.util.UiUtils;
+import com.example.myapplication.data.TaskStore;
+import com.example.myapplication.data.Task;
+import com.example.myapplication.data.Priority;
+import com.example.myapplication.util.DateUtils;
 
 import android.app.Fragment;
 import android.content.res.ColorStateList;
@@ -18,7 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class Insights extends Fragment {
+public class InsightsFragment extends Fragment {
     private int BLUE;
     private int BLUE_MID;
     private int GREEN;
@@ -35,10 +41,10 @@ public class Insights extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        contentView = inflater.inflate(R.layout.activity_insights, container, false);
+        contentView = inflater.inflate(R.layout.fragment_insights, container, false);
         loadInsightColors();
-        weeklyBars = findViewById(R.id.weeklyBars);
-        categoriesContainer = findViewById(R.id.categoriesContainer);
+        weeklyBars = contentView.findViewById(R.id.weeklyBars);
+        categoriesContainer = contentView.findViewById(R.id.categoriesContainer);
         refreshInsights();
         return contentView;
     }
@@ -85,7 +91,7 @@ public class Insights extends Fragment {
         int completedMinutes = 0;
         int dueSoFar = 0;
         int completedDueSoFar = 0;
-        String todayKey = dateKey(Calendar.getInstance());
+        String todayKey = DateUtils.todayKey();
         for (Task task : tasks) {
             if (!inWeek(task, start, end)) continue;
             if (task.done) {
@@ -99,9 +105,9 @@ public class Insights extends Fragment {
         }
 
         int rate = dueSoFar == 0 ? 0 : completedDueSoFar * 100 / dueSoFar;
-        ((TextView) findViewById(R.id.statTasksValue)).setText(String.valueOf(completedThisWeek));
-        ((TextView) findViewById(R.id.statOnTimeValue)).setText(rate + "%");
-        ((TextView) findViewById(R.id.statFocusValue)).setText(
+        ((TextView) contentView.findViewById(R.id.statTasksValue)).setText(String.valueOf(completedThisWeek));
+        ((TextView) contentView.findViewById(R.id.statOnTimeValue)).setText(rate + "%");
+        ((TextView) contentView.findViewById(R.id.statFocusValue)).setText(
                 String.format(Locale.US, "%.1fh", completedMinutes / 60f));
     }
 
@@ -128,7 +134,7 @@ public class Insights extends Fragment {
             TextView value = column.findViewById(R.id.insightDayCount);
             value.setText(String.valueOf(count));
             value.setTextColor(count == 0 ? MUTED : DARK);
-            int height = count == 0 ? dp(4) : Math.max(dp(12), dp(CHART_BAR_MAX_DP) * count / Math.max(1, max));
+            int height = count == 0 ? UiUtils.dp(getActivity(), 4) : Math.max(UiUtils.dp(getActivity(), 12), UiUtils.dp(getActivity(), CHART_BAR_MAX_DP) * count / Math.max(1, max));
             View bar = column.findViewById(R.id.insightDayBar);
             bar.setBackgroundResource(count > 0 && count == max
                     ? R.drawable.bg_insights_bar_best : R.drawable.bg_insights_bar);
@@ -150,8 +156,7 @@ public class Insights extends Fragment {
         for (Task task : tasks) {
             if (!inWeek(task, start, end)) continue;
             total++;
-            String priority = task.priority == null ? "" : task.priority.trim().toUpperCase(Locale.ENGLISH);
-            int index = priorityIndex(priority);
+            int index = Priority.fromString(task.priority).insightsIndex();
             counts[index]++;
         }
 
@@ -170,7 +175,7 @@ public class Insights extends Fragment {
         View row = LayoutInflater.from(getActivity())
                 .inflate(R.layout.item_insight_priority, categoriesContainer, false);
         LinearLayout.LayoutParams rowParams = (LinearLayout.LayoutParams) row.getLayoutParams();
-        rowParams.topMargin = dp(index == 0 ? 0 : 12);
+        rowParams.topMargin = UiUtils.dp(getActivity(), index == 0 ? 0 : 12);
         row.setLayoutParams(rowParams);
         TextView name = row.findViewById(R.id.insightPriorityName);
         name.setText("UNASSIGNED".equals(label) ? "No priority" : titleCase(label));
@@ -208,14 +213,7 @@ public class Insights extends Fragment {
             String dayName = new SimpleDateFormat("EEEE", Locale.ENGLISH).format(day.getTime());
             summary = dayName + " · " + completedByDay[bestDay] + " completed";
         }
-        ((TextView) findViewById(R.id.focusTimeText)).setText(summary);
-    }
-
-    private int priorityIndex(String priority) {
-        if ("HIGH".equals(priority)) return 0;
-        if ("MEDIUM".equals(priority)) return 1;
-        if ("LOW".equals(priority)) return 2;
-        return 3;
+        ((TextView) contentView.findViewById(R.id.focusTimeText)).setText(summary);
     }
 
     private String titleCase(String value) {
@@ -225,13 +223,13 @@ public class Insights extends Fragment {
     private boolean inWeek(Task task, Calendar start, Calendar end) {
         if (task.date == null) return false;
         String key = task.date;
-        return key.compareTo(dateKey(start)) >= 0 && key.compareTo(dateKey(end)) <= 0;
+        return key.compareTo(DateUtils.dateKey(start)) >= 0 && key.compareTo(DateUtils.dateKey(end)) <= 0;
     }
 
     private int dayIndex(String date, Calendar start) {
         if (date == null) return -1;
         try {
-            Date parsed = new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(date);
+            Date parsed = DateUtils.parseDateKey(date);
             if (parsed == null) return -1;
             Calendar day = Calendar.getInstance();
             day.setTime(parsed);
@@ -256,15 +254,4 @@ public class Insights extends Fragment {
         return start;
     }
 
-    private String dateKey(Calendar calendar) {
-        return new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(calendar.getTime());
-    }
-
-    private int dp(int value) {
-        return Math.round(value * getActivity().getResources().getDisplayMetrics().density);
-    }
-
-    private <T extends View> T findViewById(int id) {
-        return contentView.findViewById(id);
-    }
 }

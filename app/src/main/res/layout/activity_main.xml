@@ -1,182 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/hostRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
->
-
-
-
-    <!-- ===== 2. SCROLLABLE CONTENT ===== -->
-    <!-- layout_marginBottom="69dp" (bar height 56 + gap 13) makes the scrolling
-         area stop just above the bottom bar, so nothing slides underneath it.
-         paddingBottom adds a little space after the last card. -->
-    <ScrollView
+    android:background="@color/screen_background"
+    android:orientation="vertical">
+    <include layout="@layout/include_background"/>
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingBottom="16dp"
-        android:scrollbars="none">
+        android:orientation="vertical">
+       <!-- Header -->
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp">
+        <include layout="@layout/include_header" />
 
-            <!-- ===== GREETING ===== -->
-            <!-- The text is set from MainActivity.java (it depends on the time of day). -->
-            <TextView
-                android:id="@+id/greeting"
-                style="@style/Text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="19dp"
-                android:fontFamily="@font/poppins_bold"
-                android:textSize="24sp" />
+  <!-- a space for container  -->
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
-            <!-- Today's date. Also filled in from Java. -->
-            <TextView
-                android:id="@+id/date"
-                style="@style/Text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="4dp"
-                android:textColor="@color/text_secondary"
-                android:textSize="11sp" />
+    <include layout="@layout/include_bottom_nav" />
 
-            <!-- ===== DAILY PROGRESS CARD (blue) ===== -->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="112dp"
-                android:layout_marginTop="14dp"
-                android:background="@drawable/bg_progress_card"
-                android:paddingStart="16dp"
-                android:paddingTop="16dp"
-                android:paddingEnd="19dp">
+    </LinearLayout>
 
-                <TextView
-                    android:id="@+id/progress_title"
-                    style="@style/Text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_semibold"
-                    android:text="@string/daily_progress"
-                    android:textColor="@color/white"
-                    android:textSize="13sp" />
-
-                <!-- "3 of 5 tasks completed": filled in from Java. -->
-                <TextView
-                    android:id="@+id/progress_subtitle"
-                    style="@style/Text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/progress_title"
-                    android:layout_marginTop="5dp"
-                    android:textColor="@color/white"
-                    android:textSize="10sp" />
-
-                <!-- "60%" in green on the right: filled in from Java. -->
-                <TextView
-                    android:id="@+id/progress_percent"
-                    style="@style/Text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginTop="25dp"
-                    android:fontFamily="@font/poppins_bold"
-                    android:textColor="@color/accent_green"
-                    android:textSize="12sp" />
-
-                <!-- Built-in horizontal ProgressBar, drawn with our own colors
-                     (see drawable/progress_bar.xml). max=100 means the progress
-                     value is a percentage. -->
-                <ProgressBar
-                    android:id="@+id/progress_bar"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="8dp"
-                    android:layout_marginTop="55dp"
-                    android:max="100"
-                    android:progressDrawable="@drawable/progress_bar" />
-            </RelativeLayout>
-
-            <!-- ===== YOUR PRIORITIES ===== -->
-            <TextView
-                style="@style/Text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="22dp"
-                android:layout_marginBottom="4dp"
-                android:fontFamily="@font/poppins_bold"
-                android:text="@string/your_priorities"
-                android:textSize="17sp" />
-
-            <!-- Each task row uses the reusable styles from values/styles.xml. -->
-
-            <!-- Today tasks are created from the signed-in user's saved task list. -->
-            <LinearLayout
-                android:id="@+id/todayTasksContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
-
-            <TextView
-                android:id="@+id/todayTasksEmpty"
-                style="@style/Text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:gravity="center"
-                android:text="@string/no_tasks_today"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:visibility="gone" />
-            <!-- ===== NADHIM SUGGESTS CARD ===== -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="112dp"
-                android:layout_marginTop="18dp"
-                android:background="@drawable/bg_suggestion"
-                android:orientation="vertical"
-                android:paddingStart="16dp"
-                android:paddingTop="15dp"
-                android:paddingEnd="16dp">
-
-                <TextView
-                    style="@style/Text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_bold"
-                    android:text="@string/suggestion_label"
-                    android:textColor="@color/brand_blue"
-                    android:textSize="9sp" />
-
-                <TextView
-                    style="@style/Text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:fontFamily="@font/poppins_semibold"
-                    android:text="@string/suggestion_title"
-                    android:textSize="13sp" />
-
-                <TextView
-                    style="@style/Text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:lineSpacingExtra="2dp"
-                    android:text="@string/suggestion_body"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="10sp" />
-            </LinearLayout>
-        </LinearLayout>
-    </ScrollView>
-
-  
+    <include
+        android:id="@+id/assistantButton"
+        layout="@layout/view_assistant_button"
+        android:layout_width="61dp"
+        android:layout_height="61dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="18dp"
+        android:layout_marginBottom="86dp" />
 </FrameLayout>

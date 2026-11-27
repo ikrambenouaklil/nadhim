@@ -1,14 +1,13 @@
-package com.example.myapplication;
+package com.example.myapplication.ui.addtask;
+import com.example.myapplication.R;
+import com.example.myapplication.data.Task;
+import com.example.myapplication.util.DateUtils;
 
 import android.app.Activity;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
 
 public class TaskReviewActivity extends Activity {
     static final String EXTRA_TASK = "review_task";
@@ -26,9 +25,9 @@ public class TaskReviewActivity extends Activity {
         }
 
         ((TextView) findViewById(R.id.reviewTaskTitle)).setText(task.title);
-        ((TextView) findViewById(R.id.reviewTaskDate)).setText(formatDate(task.date));
-        ((TextView) findViewById(R.id.reviewTaskTime)).setText(formatTime(task.minutes));
-        ((TextView) findViewById(R.id.reviewTaskDuration)).setText(formatDuration(task.duration));
+        ((TextView) findViewById(R.id.reviewTaskDate)).setText(DateUtils.formatLong(task.date));
+        ((TextView) findViewById(R.id.reviewTaskTime)).setText(DateUtils.formatTime(task.minutes));
+        ((TextView) findViewById(R.id.reviewTaskDuration)).setText(DateUtils.formatDuration(task.duration));
         String priority = task.priority == null || task.priority.trim().isEmpty()
                 ? "No priority" : task.priority;
         ((TextView) findViewById(R.id.reviewTaskPriority)).setText(priority);
@@ -51,24 +50,4 @@ public class TaskReviewActivity extends Activity {
         finish();
     }
 
-    private String formatDate(String value) {
-        try {
-            return new SimpleDateFormat("EEE, MMM d, yyyy", Locale.ENGLISH)
-                    .format(new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(value));
-        } catch (ParseException | NullPointerException ignored) {
-            return value;
-        }
-    }
-
-    private String formatTime(int minutes) {
-        return String.format(Locale.US, "%02d:%02d", minutes / 60, minutes % 60);
-    }
-
-    private String formatDuration(int minutes) {
-        int hours = minutes / 60;
-        int remaining = minutes % 60;
-        if (hours == 0) return remaining + " min";
-        if (remaining == 0) return hours + (hours == 1 ? " hour" : " hours");
-        return hours + " h " + remaining + " min";
-    }
 }

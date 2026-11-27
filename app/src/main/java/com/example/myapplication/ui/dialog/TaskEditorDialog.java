@@ -1,4 +1,9 @@
-package com.example.myapplication;
+package com.example.myapplication.ui.dialog;
+import com.example.myapplication.R;
+import com.example.myapplication.data.TaskStore;
+import com.example.myapplication.data.Task;
+import com.example.myapplication.data.Priority;
+import com.example.myapplication.util.DateUtils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -18,10 +23,10 @@ import java.util.Date;
 import java.util.Locale;
 
 /** Binds task data and actions to the shared XML task editor. */
-final class TaskEditorDialog {
+public final class TaskEditorDialog {
     private TaskEditorDialog() { }
 
-    static void show(Activity activity, Task task, Runnable onSaved) {
+    public static void show(Activity activity, Task task, Runnable onSaved) {
         View form = activity.getLayoutInflater().inflate(R.layout.dialog_task_editor, null);
         EditText title = form.findViewById(R.id.editTaskTitle);
         EditText notes = form.findViewById(R.id.editTaskNotes);
@@ -38,26 +43,26 @@ final class TaskEditorDialog {
                 android.R.layout.simple_spinner_item, priorities);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         priority.setAdapter(adapter);
-        String current = task.priority == null ? "" : task.priority.toUpperCase(Locale.ENGLISH);
-        priority.setSelection("LOW".equals(current) ? 1 : "MEDIUM".equals(current) ? 2
-                : "HIGH".equals(current) ? 3 : 0);
+        Priority current = Priority.fromString(task.priority);
+        priority.setSelection(current == Priority.LOW ? 1 : current == Priority.MEDIUM ? 2
+                : current == Priority.HIGH ? 3 : 0);
 
         Calendar date = Calendar.getInstance();
         try {
-            Date parsed = new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(task.date);
+            Date parsed = DateUtils.parseDateKey(task.date);
             if (parsed != null) date.setTime(parsed);
         } catch (java.text.ParseException ignored) { }
         int[] taskMinutes = {task.minutes};
-        dateButton.setText("Date: " + formatDate(date));
-        timeButton.setText("Time: " + formatTime(taskMinutes[0]));
+        dateButton.setText("Date: " + DateUtils.formatLong(DateUtils.dateKey(date)));
+        timeButton.setText("Time: " + DateUtils.formatTime(taskMinutes[0]));
         dateButton.setOnClickListener(v -> new DatePickerDialog(activity,
                 (picker, year, month, day) -> {
                     date.set(year, month, day);
-                    dateButton.setText("Date: " + formatDate(date));
+                    dateButton.setText("Date: " + DateUtils.formatLong(DateUtils.dateKey(date)));
                 }, date.get(Calendar.YEAR), date.get(Calendar.MONTH), date.get(Calendar.DAY_OF_MONTH)).show());
         timeButton.setOnClickListener(v -> new TimePickerDialog(activity, (picker, hour, minute) -> {
             taskMinutes[0] = hour * 60 + minute;
-            timeButton.setText("Time: " + formatTime(taskMinutes[0]));
+            timeButton.setText("Time: " + DateUtils.formatTime(taskMinutes[0]));
         }, taskMinutes[0] / 60, taskMinutes[0] % 60, true).show());
 
         hours.setMinValue(0);
@@ -89,11 +94,11 @@ final class TaskEditorDialog {
 
             task.title = newTitle;
             task.notes = notes.getText().toString().trim();
-            task.date = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(date.getTime());
+            task.date = DateUtils.dateKey(date);
             task.minutes = taskMinutes[0];
             task.duration = duration;
             int selected = priority.getSelectedItemPosition();
-            task.priority = selected == 0 ? "" : priorities[selected].toUpperCase(Locale.ENGLISH);
+            task.priority = Priority.fromString(selected == 0 ? null : priorities[selected]).storageValue();
             if (!new TaskStore(activity).update(task)) {
                 Toast.makeText(activity, "Could not save task changes", Toast.LENGTH_SHORT).show();
                 return;
@@ -105,11 +110,4 @@ final class TaskEditorDialog {
         dialog.show();
     }
 
-    private static String formatDate(Calendar date) {
-        return new SimpleDateFormat("EEE, MMM d, yyyy", Locale.ENGLISH).format(date.getTime());
-    }
-
-    private static String formatTime(int minutes) {
-        return String.format(Locale.US, "%02d:%02d", minutes / 60, minutes % 60);
-    }
 }
