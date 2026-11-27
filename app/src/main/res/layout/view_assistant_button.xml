@@ -3,9 +3,9 @@
     android:id="@+id/assistantButton"
     android:layout_width="56dp"
     android:layout_height="56dp"
-    android:background="@drawable/bg_assistant_button"
+    android:background="@android:color/transparent"
     android:contentDescription="Open Nadhim chat"
     android:elevation="8dp"
-    android:padding="15dp"
-    android:scaleType="centerInside"
-    android:src="@drawable/ic_robot_face" />
+    android:padding="0dp"
+    android:scaleType="fitCenter"
+    android:src="@drawable/assistant_button_figma" />
