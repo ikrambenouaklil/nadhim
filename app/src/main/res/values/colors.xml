@@ -9,6 +9,22 @@
 
     <!-- Accent green (progress bar fill, "LOW" badge) -->
     <color name="accent_green">#9DFF00</color>
+    <color name="text_hint">#94A3B8</color>
+
+    <!-- Insights palette -->
+    <color name="insight_blue">@color/brand_blue</color>
+    <color name="insight_blue_light">@color/brand_blue_light</color>
+    <color name="insight_blue_mid">@color/brand_blue_mid</color>
+    <color name="insight_green">@color/accent_green</color>
+    <color name="insight_dark">#334155</color>
+    <color name="insight_muted">#64748B</color>
+    <color name="insight_track">#E2E8F0</color>
+    <color name="insight_focus_start">@color/brand_blue</color>
+    <color name="insight_focus_end">@color/brand_blue_light</color>
+    <color name="insight_focus_label">@color/accent_green</color>
+    <color name="brand_blue_pale">#EAF0FF</color>
+    <color name="brand_blue_border">#D9E4FF</color>
+    <color name="brand_green_pale">#E8FFB8</color>
 
     <!-- Backgrounds -->
     <color name="screen_background">#FAFFFE</color>

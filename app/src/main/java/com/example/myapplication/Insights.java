@@ -2,8 +2,6 @@ package com.example.myapplication;
 
 import android.app.Fragment;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -21,14 +19,13 @@ import java.util.List;
 import java.util.Locale;
 
 public class Insights extends Fragment {
-    private static final int BLUE = Color.rgb(37, 99, 235);
-    private static final int BLUE_LIGHT = Color.rgb(96, 165, 250);
-    private static final int GREEN = Color.rgb(34, 197, 94);
-    private static final int RED = Color.rgb(239, 68, 68);
-    private static final int PURPLE = Color.rgb(147, 51, 234);
-    private static final int DARK = Color.rgb(51, 65, 85);
-    private static final int MUTED = Color.rgb(100, 116, 139);
-    private static final int[] PRIORITY_COLORS = {RED, BLUE, GREEN, PURPLE};
+    private int BLUE;
+    private int BLUE_MID;
+    private int GREEN;
+    private int DARK;
+    private int MUTED;
+    private int TRACK;
+    private int[] priorityColors;
     private static final String[] PRIORITIES = {"HIGH", "MEDIUM", "LOW", "UNASSIGNED"};
     private static final int CHART_BAR_MAX_DP = 92;
 
@@ -39,10 +36,21 @@ public class Insights extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         contentView = inflater.inflate(R.layout.activity_insights, container, false);
+        loadInsightColors();
         weeklyBars = findViewById(R.id.weeklyBars);
         categoriesContainer = findViewById(R.id.categoriesContainer);
         refreshInsights();
         return contentView;
+    }
+
+    private void loadInsightColors() {
+        BLUE = getActivity().getColor(R.color.insight_blue);
+        BLUE_MID = getActivity().getColor(R.color.insight_blue_mid);
+        GREEN = getActivity().getColor(R.color.insight_green);
+        DARK = getActivity().getColor(R.color.insight_dark);
+        MUTED = getActivity().getColor(R.color.insight_muted);
+        TRACK = getActivity().getColor(R.color.insight_track);
+        priorityColors = new int[]{BLUE, BLUE_MID, GREEN, MUTED};
     }
 
     @Override
@@ -115,37 +123,22 @@ public class Insights extends Fragment {
             day.add(Calendar.DAY_OF_MONTH, i);
             int count = completedByDay[i];
 
-            LinearLayout column = new LinearLayout(getActivity());
-            column.setOrientation(LinearLayout.VERTICAL);
-            column.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
-            column.setLayoutParams(new LinearLayout.LayoutParams(
-                    0, LinearLayout.LayoutParams.MATCH_PARENT, 1));
-
-            TextView value = new TextView(getActivity());
+            View column = LayoutInflater.from(getActivity())
+                    .inflate(R.layout.item_insight_day_bar, weeklyBars, false);
+            TextView value = column.findViewById(R.id.insightDayCount);
             value.setText(String.valueOf(count));
             value.setTextColor(count == 0 ? MUTED : DARK);
-            value.setTextSize(10);
-            value.setGravity(Gravity.CENTER);
-            column.addView(value);
-
             int height = count == 0 ? dp(4) : Math.max(dp(12), dp(CHART_BAR_MAX_DP) * count / Math.max(1, max));
-            View bar = new View(getActivity());
-            bar.setBackground(barDrawable(count > 0 && count == max ? GREEN : BLUE_LIGHT, BLUE));
-            LinearLayout.LayoutParams barParams = new LinearLayout.LayoutParams(dp(16), height);
-            barParams.topMargin = dp(4);
-            column.addView(bar, barParams);
+            View bar = column.findViewById(R.id.insightDayBar);
+            bar.setBackgroundResource(count > 0 && count == max
+                    ? R.drawable.bg_insights_bar_best : R.drawable.bg_insights_bar);
+            android.view.ViewGroup.LayoutParams barParams = bar.getLayoutParams();
+            barParams.height = height;
+            bar.setLayoutParams(barParams);
 
             String name = new SimpleDateFormat("EEE", Locale.ENGLISH).format(day.getTime());
-            TextView label = new TextView(getActivity());
+            TextView label = column.findViewById(R.id.insightDayLabel);
             label.setText(name.substring(0, 1));
-            label.setTextColor(MUTED);
-            label.setTextSize(10);
-            label.setGravity(Gravity.CENTER);
-            LinearLayout.LayoutParams labelParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            labelParams.topMargin = dp(6);
-            column.addView(label, labelParams);
-
             weeklyBars.addView(column);
         }
     }
@@ -163,60 +156,35 @@ public class Insights extends Fragment {
         }
 
         if (total == 0) {
-            TextView empty = new TextView(getActivity());
-            empty.setText("Add tasks to see this week's priority mix.");
-            empty.setTextColor(MUTED);
-            empty.setTextSize(12);
-            categoriesContainer.addView(empty);
+            categoriesContainer.addView(LayoutInflater.from(getActivity())
+                    .inflate(R.layout.item_insight_empty, categoriesContainer, false));
             return;
         }
 
         for (int i = 0; i < PRIORITIES.length; i++) {
-            addPriorityRow(PRIORITIES[i], counts[i], counts[i] * 100 / total, PRIORITY_COLORS[i], i);
+            addPriorityRow(PRIORITIES[i], counts[i], counts[i] * 100 / total, priorityColors[i], i);
         }
     }
 
     private void addPriorityRow(String label, int count, int percent, int color, int index) {
-        LinearLayout row = new LinearLayout(getActivity());
-        row.setOrientation(LinearLayout.VERTICAL);
-        row.setPadding(0, dp(index == 0 ? 0 : 12), 0, dp(4));
-
-        LinearLayout header = new LinearLayout(getActivity());
-        header.setGravity(Gravity.CENTER_VERTICAL);
-        TextView name = new TextView(getActivity());
+        View row = LayoutInflater.from(getActivity())
+                .inflate(R.layout.item_insight_priority, categoriesContainer, false);
+        LinearLayout.LayoutParams rowParams = (LinearLayout.LayoutParams) row.getLayoutParams();
+        rowParams.topMargin = dp(index == 0 ? 0 : 12);
+        row.setLayoutParams(rowParams);
+        TextView name = row.findViewById(R.id.insightPriorityName);
         name.setText("UNASSIGNED".equals(label) ? "No priority" : titleCase(label));
-        name.setTextColor(DARK);
-        name.setTextSize(12);
-        name.setLayoutParams(new LinearLayout.LayoutParams(0,
-                LinearLayout.LayoutParams.WRAP_CONTENT, 1));
-        TextView value = new TextView(getActivity());
+        TextView value = row.findViewById(R.id.insightPriorityValue);
         value.setText(count + " tasks · " + percent + "%");
-        value.setTextColor(MUTED);
-        value.setTextSize(11);
-        header.addView(name);
-        header.addView(value);
-
-        ProgressBar progress = new ProgressBar(getActivity(), null,
-                android.R.attr.progressBarStyleHorizontal);
+        ProgressBar progress = row.findViewById(R.id.insightPriorityProgress);
         progress.setMax(100);
         progress.setProgress(percent);
         progress.setProgressTintList(ColorStateList.valueOf(color));
-        progress.setProgressBackgroundTintList(ColorStateList.valueOf(Color.rgb(226, 232, 240)));
-        LinearLayout.LayoutParams progressParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, dp(6));
-        progressParams.topMargin = dp(6);
-
-        row.addView(header);
-        row.addView(progress, progressParams);
+        progress.setProgressBackgroundTintList(ColorStateList.valueOf(TRACK));
         categoriesContainer.addView(row);
     }
 
     private void renderFocusCard(List<Task> tasks, Calendar start, Calendar end) {
-        GradientDrawable gradient = new GradientDrawable(
-                GradientDrawable.Orientation.LEFT_RIGHT, new int[]{Color.rgb(29, 78, 216), BLUE});
-        gradient.setCornerRadius(dp(16));
-        findViewById(R.id.focusCard).setBackground(gradient);
-
         int[] completedByDay = new int[7];
         for (Task task : tasks) {
             if (!task.done) continue;
@@ -290,13 +258,6 @@ public class Insights extends Fragment {
 
     private String dateKey(Calendar calendar) {
         return new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(calendar.getTime());
-    }
-
-    private GradientDrawable barDrawable(int topColor, int bottomColor) {
-        GradientDrawable drawable = new GradientDrawable(
-                GradientDrawable.Orientation.TOP_BOTTOM, new int[]{topColor, bottomColor});
-        drawable.setCornerRadius(dp(8));
-        return drawable;
     }
 
     private int dp(int value) {

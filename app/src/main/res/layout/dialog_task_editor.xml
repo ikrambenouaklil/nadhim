@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="20dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="8dp">
+
+        <TextView style="@style/Text.FormLabel" android:text="Task name" />
+        <EditText
+            android:id="@+id/editTaskTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true" />
+
+        <TextView style="@style/Text.FormLabel" android:text="Notes" />
+        <EditText
+            android:id="@+id/editTaskNotes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="top|start"
+            android:inputType="textCapSentences|textMultiLine"
+            android:minLines="2" />
+
+        <TextView style="@style/Text.FormLabel" android:text="Priority" />
+        <Spinner
+            android:id="@+id/editTaskPriority"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView style="@style/Text.FormLabel" android:text="Deadline date" />
+        <TextView
+            android:id="@+id/editTaskDate"
+            style="@style/Text.PickerButton"
+            android:layout_width="match_parent"
+            android:layout_height="44dp" />
+
+        <TextView style="@style/Text.FormLabel" android:text="Deadline time" />
+        <TextView
+            android:id="@+id/editTaskTime"
+            style="@style/Text.PickerButton"
+            android:layout_width="match_parent"
+            android:layout_height="44dp" />
+
+        <TextView style="@style/Text.FormLabel" android:text="Estimated duration" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+            <NumberPicker
+                android:id="@+id/editTaskHours"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="hours" />
+            <NumberPicker
+                android:id="@+id/editTaskMinutes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="minutes" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

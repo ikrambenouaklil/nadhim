@@ -7,29 +7,25 @@ import android.app.Fragment;
 import android.app.TimePickerDialog;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.Locale;
 
 public class AddTask extends Fragment {
     private static final int REQUEST_REVIEW = 51;
     private static final String EXTRA_TASK = "review_task";
-    private static final int BLUE = Color.rgb(37, 99, 235);
-    private static final int BLUE_DARK = Color.rgb(29, 78, 216);
-    private static final int BLUE_CHIP = Color.rgb(219, 234, 254);
-    private static final int DARK = Color.rgb(51, 65, 85);
-    private static final int BORDER = Color.rgb(226, 232, 240);
+    private int BLUE;
+    private int BLUE_CHIP;
+    private int DARK;
 
     private View contentView;
     private EditText descriptionInput;
@@ -49,6 +45,9 @@ public class AddTask extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         contentView = inflater.inflate(R.layout.activity_add_task, container, false);
+        BLUE = getActivity().getColor(R.color.brand_blue);
+        BLUE_CHIP = getActivity().getColor(R.color.brand_blue_pale);
+        DARK = getActivity().getColor(R.color.text_primary);
         bindViews();
         setupDeadlinePickers();
         setupPriority();
@@ -66,6 +65,18 @@ public class AddTask extends Fragment {
         priorityLow = findViewById(R.id.priorityLow);
         priorityMedium = findViewById(R.id.priorityMedium);
         priorityHigh = findViewById(R.id.priorityHigh);
+    }
+
+    void setInitialDate(String dateKey) {
+        if (dateKey == null || contentView == null) return;
+        try {
+            Date date = new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(dateKey);
+            if (date == null) return;
+            deadline.setTime(date);
+            dateSet = true;
+            dateText.setText(new SimpleDateFormat("EEE, MMM d, yyyy", Locale.ENGLISH).format(deadline.getTime()));
+            dateText.setTextColor(DARK);
+        } catch (ParseException ignored) { }
     }
 
     private void setupDeadlinePickers() {
@@ -109,26 +120,17 @@ public class AddTask extends Fragment {
     private void setupDurationPicker() {
         updateDurationText();
         durationText.setOnClickListener(v -> {
-            LinearLayout pickers = new LinearLayout(getActivity());
-            pickers.setGravity(Gravity.CENTER);
-            NumberPicker hours = new NumberPicker(getActivity());
+            View pickers = getLayoutInflater().inflate(R.layout.dialog_duration_picker, null);
+            android.widget.NumberPicker hours = pickers.findViewById(R.id.durationHoursPicker);
             hours.setMinValue(0);
             hours.setMaxValue(72);
             hours.setValue(duration / 60);
-            NumberPicker minutes = new NumberPicker(getActivity());
+            android.widget.NumberPicker minutes = pickers.findViewById(R.id.durationMinutesPicker);
             String[] minuteOptions = {"00", "15", "30", "45"};
             minutes.setMinValue(0);
             minutes.setMaxValue(minuteOptions.length - 1);
             minutes.setDisplayedValues(minuteOptions);
             minutes.setValue((duration % 60) / 15);
-            pickers.addView(hours);
-            TextView hourLabel = new TextView(getActivity());
-            hourLabel.setText(" hours   ");
-            pickers.addView(hourLabel);
-            pickers.addView(minutes);
-            TextView minuteLabel = new TextView(getActivity());
-            minuteLabel.setText(" minutes");
-            pickers.addView(minuteLabel);
             new android.app.AlertDialog.Builder(getActivity())
                     .setTitle("Estimated duration")
                     .setView(pickers)
@@ -152,21 +154,15 @@ public class AddTask extends Fragment {
     }
 
     private void styleChip(TextView chip, boolean selected) {
-        GradientDrawable bg = new GradientDrawable();
-        bg.setCornerRadius(dp(18));
-        bg.setColor(selected ? BLUE_CHIP : Color.WHITE);
-        if (!selected) bg.setStroke(dp(1), BORDER);
-        chip.setBackground(bg);
+        chip.setBackgroundResource(selected ? R.drawable.bg_priority_chip_selected
+                : R.drawable.bg_priority_chip_unselected);
         chip.setTextColor(selected ? BLUE : DARK);
         chip.setTypeface(null, selected ? Typeface.BOLD : Typeface.NORMAL);
     }
 
     private void setupSaveButton() {
         TextView button = findViewById(R.id.saveTaskButton);
-        GradientDrawable gradient = new GradientDrawable(
-                GradientDrawable.Orientation.LEFT_RIGHT, new int[]{BLUE_DARK, BLUE});
-        gradient.setCornerRadius(dp(16));
-        button.setBackground(gradient);
+        button.setBackgroundResource(R.drawable.bg_add_task_submit);
         button.setOnClickListener(v -> {
             String title = descriptionInput.getText().toString().trim();
             if (title.isEmpty()) {
@@ -219,9 +215,9 @@ public class AddTask extends Fragment {
         dateSet = false;
         timeSet = false;
         dateText.setText("Select date");
-        dateText.setTextColor(Color.rgb(148, 163, 184));
+        dateText.setTextColor(getActivity().getColor(R.color.text_hint));
         timeText.setText("Select time");
-        timeText.setTextColor(Color.rgb(148, 163, 184));
+        timeText.setTextColor(getActivity().getColor(R.color.text_hint));
         duration = 30;
         updateDurationText();
         selectPriority("MEDIUM");

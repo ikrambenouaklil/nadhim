@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
+    tools:background="@color/screen_background"
     android:orientation="vertical">
 
     <ScrollView
@@ -26,7 +27,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="22dp"
                 android:text="Your insights"
-                android:textColor="#172033"
+                android:textColor="@color/insight_dark"
                 android:textSize="28sp"
                 android:textStyle="bold" />
 
@@ -35,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="A clearer view of your productivity"
-                android:textColor="#64748B"
+                android:textColor="@color/insight_muted"
                 android:textSize="13sp" />
 
             <!-- Three statistics cards -->
@@ -60,7 +61,7 @@
                         android:id="@+id/statTasksValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="#2563EB"
+                        android:textColor="@color/insight_blue"
                         android:textSize="22sp"
                         android:textStyle="bold" />
 
@@ -68,7 +69,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Done this week"
-                        android:textColor="#64748B"
+                        android:textColor="@color/insight_muted"
                         android:textSize="11sp" />
                 </LinearLayout>
 
@@ -88,7 +89,7 @@
                         android:id="@+id/statOnTimeValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="#2563EB"
+                        android:textColor="@color/insight_blue"
                         android:textSize="22sp"
                         android:textStyle="bold" />
 
@@ -96,7 +97,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Completion rate"
-                        android:textColor="#64748B"
+                        android:textColor="@color/insight_muted"
                         android:textSize="11sp" />
                 </LinearLayout>
 
@@ -115,7 +116,7 @@
                         android:id="@+id/statFocusValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="#2563EB"
+                        android:textColor="@color/insight_blue"
                         android:textSize="22sp"
                         android:textStyle="bold" />
 
@@ -123,7 +124,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Est. hours done"
-                        android:textColor="#64748B"
+                        android:textColor="@color/insight_muted"
                         android:textSize="11sp" />
                 </LinearLayout>
             </LinearLayout>
@@ -134,7 +135,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="Completed tasks this week"
-                android:textColor="#172033"
+                android:textColor="@color/insight_dark"
                 android:textSize="17sp"
                 android:textStyle="bold" />
 
@@ -156,7 +157,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="Priority mix this week"
-                android:textColor="#172033"
+                android:textColor="@color/insight_dark"
                 android:textSize="17sp"
                 android:textStyle="bold" />
 
@@ -175,6 +176,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
+                android:background="@drawable/bg_insights_focus"
                 android:orientation="vertical"
                 android:padding="18dp">
 
@@ -182,7 +184,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="● MOST PRODUCTIVE DAY"
-                    android:textColor="#A3E600"
+                    android:textColor="@color/insight_focus_label"
                     android:textSize="10sp"
                     android:textStyle="bold" />
 
@@ -191,7 +193,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/white"
                     android:textSize="18sp"
                     android:textStyle="bold" />
             </LinearLayout>

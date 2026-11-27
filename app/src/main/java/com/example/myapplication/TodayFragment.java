@@ -136,7 +136,7 @@ public class TodayFragment extends Fragment {
         checkBox.setChecked(task.done);
         updateTitleStyle(title, task.done);
         checkBox.setOnCheckedChangeListener((button, isChecked) -> saveTaskStatus(task, checkBox, title, isChecked));
-        editButton.setOnClickListener(v -> TodayTaskEditor.show(getActivity(), task, this::loadTodaysTasks));
+        editButton.setOnClickListener(v -> TaskEditorDialog.show(getActivity(), task, this::loadTodaysTasks));
         deleteButton.setOnClickListener(v -> confirmDelete(task));
         tasksContainer.addView(row);
     }

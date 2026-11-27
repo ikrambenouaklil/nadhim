@@ -6,8 +6,6 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.graphics.Color;
-import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.content.Intent;
 import android.database.Cursor;
@@ -187,45 +185,30 @@ public class MainActivity extends Activity {
         pendingAttachmentsScroll.setVisibility(pendingAttachments.isEmpty() ? View.GONE : View.VISIBLE);
     }
 
-    private LinearLayout createAttachmentCard(Uri uri, boolean removable) {
+    private View createAttachmentCard(Uri uri, boolean removable) {
         String name = attachmentName(uri);
         String mimeType = getContentResolver().getType(uri);
-        LinearLayout card = new LinearLayout(this);
-        card.setGravity(Gravity.CENTER_VERTICAL);
-        card.setOrientation(LinearLayout.HORIZONTAL);
-        card.setPadding(dp(10), dp(8), dp(12), dp(8));
-        card.setBackground(roundBackground(Color.rgb(239, 246, 255), Color.rgb(191, 219, 254), 14));
+        LinearLayout card = (LinearLayout) getLayoutInflater()
+                .inflate(R.layout.item_chat_attachment, pendingAttachmentsContainer, false);
         LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         cardParams.gravity = removable ? Gravity.CENTER_VERTICAL : Gravity.END;
         cardParams.bottomMargin = removable ? 0 : dp(10);
         cardParams.rightMargin = removable ? dp(8) : 0;
         card.setLayoutParams(cardParams);
-
+        ImageView preview = card.findViewById(R.id.chatAttachmentImage);
+        TextView fileIcon = card.findViewById(R.id.chatAttachmentIcon);
+        TextView fileName = card.findViewById(R.id.chatAttachmentName);
+        TextView remove = card.findViewById(R.id.chatAttachmentRemove);
+        fileName.setText(name);
         if (mimeType != null && mimeType.startsWith("image/")) {
-            ImageView preview = new ImageView(this);
-            preview.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            preview.setVisibility(View.VISIBLE);
+            fileIcon.setVisibility(View.GONE);
             try { preview.setImageURI(uri); } catch (RuntimeException ignored) { }
-            card.addView(preview, new LinearLayout.LayoutParams(dp(54), dp(54)));
-        } else {
-            TextView fileIcon = label("▤", 22, Color.rgb(37, 99, 235), true);
-            fileIcon.setGravity(Gravity.CENTER);
-            card.addView(fileIcon, new LinearLayout.LayoutParams(dp(42), dp(42)));
         }
-        TextView fileName = label(name, 13, Color.rgb(30, 64, 110), true);
-        fileName.setMaxWidth(dp(190));
-        fileName.setMaxLines(2);
-        fileName.setEllipsize(android.text.TextUtils.TruncateAt.END);
-        LinearLayout.LayoutParams nameParams = new LinearLayout.LayoutParams(-2, -2);
-        nameParams.leftMargin = dp(9);
-        card.addView(fileName, nameParams);
         if (removable) {
-            TextView remove = label("×", 22, Color.rgb(100, 116, 139), false);
-            remove.setGravity(Gravity.CENTER);
+            remove.setVisibility(View.VISIBLE);
             remove.setContentDescription("Remove " + name);
-            LinearLayout.LayoutParams removeParams = new LinearLayout.LayoutParams(dp(28), dp(42));
-            removeParams.leftMargin = dp(6);
-            card.addView(remove, removeParams);
             remove.setOnClickListener(v -> {
                 pendingAttachments.remove(uri);
                 renderPendingAttachments();
@@ -246,30 +229,19 @@ public class MainActivity extends Activity {
         return name == null || name.trim().isEmpty() ? "Selected attachment" : name;
     }
 
-    private TextView chatBubble(String text, boolean fromUser) {
-        TextView bubble = label(text, 14, fromUser ? Color.WHITE : Color.rgb(51, 65, 85), false);
-        bubble.setPadding(dp(13), dp(10), dp(13), dp(10));
-        bubble.setBackground(roundBackground(fromUser ? Color.rgb(37, 99, 235) : Color.rgb(241, 245, 249), Color.TRANSPARENT, 16));
+    private View chatBubble(String text, boolean fromUser) {
+        TextView bubble = (TextView) getLayoutInflater()
+                .inflate(R.layout.item_chat_bubble, chatMessages, false);
+        bubble.setText(text);
+        if (fromUser) bubble.setBackgroundResource(R.drawable.bg_chat_user_bubble);
+        else bubble.setBackgroundResource(R.drawable.bg_chat_received);
+        if (fromUser) bubble.setTextColor(Color.WHITE);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.gravity = fromUser ? Gravity.END : Gravity.START;
         params.bottomMargin = dp(9);
         bubble.setLayoutParams(params);
         return bubble;
-    }
-
-    private TextView label(String text, int size, int color, boolean bold) {
-        TextView view = new TextView(this);
-        view.setText(text); view.setTextSize(size); view.setTextColor(color);
-        if (bold) view.setTypeface(null, Typeface.BOLD);
-        return view;
-    }
-
-    private GradientDrawable roundBackground(int color, int stroke, int radiusDp) {
-        GradientDrawable drawable = new GradientDrawable();
-        drawable.setColor(color); drawable.setCornerRadius(dp(radiusDp));
-        if (stroke != Color.TRANSPARENT) drawable.setStroke(dp(1), stroke);
-        return drawable;
     }
 
     private int dp(int value) { return Math.round(value * getResources().getDisplayMetrics().density); }
@@ -314,6 +286,15 @@ public class MainActivity extends Activity {
 
     void showCalendarTab() {
         showTab(1);
+    }
+
+    void showAddTaskForDate(String dateKey) {
+        showTab(2);
+        getFragmentManager().executePendingTransactions();
+        Fragment addTask = getFragmentManager().findFragmentByTag(TAB_TAGS[2]);
+        if (addTask instanceof AddTask) {
+            ((AddTask) addTask).setInitialDate(dateKey);
+        }
     }
 
     private void showTab(int tab) {

@@ -7,6 +7,6 @@
         android:type="radial"
         android:gradientRadius="45dp"
         android:startColor="@color/accent_green"
-        android:centerColor="#BBFF4D"
-        android:endColor="#D8FF99" />
+        android:centerColor="@color/accent_green"
+        android:endColor="@color/brand_green_pale" />
 </shape>

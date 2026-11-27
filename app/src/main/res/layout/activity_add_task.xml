@@ -21,7 +21,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="22dp"
                 android:text="Add a new task"
-                android:textColor="#172033"
+                android:textColor="@color/insight_dark"
                 android:textSize="28sp"
                 android:textStyle="bold" />
             <TextView
@@ -29,14 +29,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="Tell Nadhim what you need to get done"
-                android:textColor="#64748B"
+                android:textColor="@color/insight_muted"
                 android:textSize="13sp" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="22dp"
                 android:text="Task description"
-                android:textColor="#172033"
+                android:textColor="@color/insight_dark"
                 android:textSize="14sp"
                 android:textStyle="bold" />
             <EditText
@@ -50,15 +50,15 @@
                 android:inputType="textMultiLine|textCapSentences"
                 android:minHeight="100dp"
                 android:padding="14dp"
-                android:textColor="#334155"
-                android:textColorHint="#94A3B8"
+                android:textColor="@color/insight_dark"
+                android:textColorHint="@color/text_hint"
                 android:textSize="13sp" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:text="Deadline date"
-                android:textColor="#172033"
+                android:textColor="@color/insight_dark"
                 android:textSize="14sp"
                 android:textStyle="bold" />
             <TextView
@@ -73,14 +73,14 @@
                 android:paddingStart="14dp"
                 android:paddingEnd="14dp"
                 android:text="Select date"
-                android:textColor="#94A3B8"
+                android:textColor="@color/text_hint"
                 android:textSize="13sp" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
                 android:text="Deadline time"
-                android:textColor="#172033"
+                android:textColor="@color/insight_dark"
                 android:textSize="14sp"
                 android:textStyle="bold" />
             <TextView
@@ -95,14 +95,14 @@
                 android:paddingStart="14dp"
                 android:paddingEnd="14dp"
                 android:text="Select time"
-                android:textColor="#94A3B8"
+                android:textColor="@color/text_hint"
                 android:textSize="13sp" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:text="Priority"
-                android:textColor="#172033"
+                android:textColor="@color/insight_dark"
                 android:textSize="14sp"
                 android:textStyle="bold" />
             <LinearLayout
@@ -119,7 +119,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:text="Estimated duration"
-                android:textColor="#172033"
+                android:textColor="@color/insight_dark"
                 android:textSize="14sp"
                 android:textStyle="bold" />
             <TextView
@@ -133,14 +133,14 @@
                 android:gravity="center_vertical"
                 android:paddingStart="14dp"
                 android:paddingEnd="14dp"
-                android:textColor="#334155"
+                android:textColor="@color/insight_dark"
                 android:textSize="13sp" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:text="Additional details"
-                android:textColor="#172033"
+                android:textColor="@color/insight_dark"
                 android:textSize="14sp"
                 android:textStyle="bold" />
             <EditText
@@ -154,8 +154,8 @@
                 android:inputType="textMultiLine|textCapSentences"
                 android:minHeight="80dp"
                 android:padding="14dp"
-                android:textColor="#334155"
-                android:textColorHint="#94A3B8"
+                android:textColor="@color/insight_dark"
+                android:textColorHint="@color/text_hint"
                 android:textSize="13sp" />
             <TextView
                 android:id="@+id/saveTaskButton"
@@ -166,7 +166,7 @@
                 android:focusable="true"
                 android:gravity="center"
                 android:text="Analyze with Nadhim"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/white"
                 android:textSize="15sp"
                 android:textStyle="bold" />
         </LinearLayout>
