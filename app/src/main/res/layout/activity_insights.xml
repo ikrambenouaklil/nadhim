@@ -67,7 +67,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Tasks done"
+                        android:text="Done this week"
                         android:textColor="#64748B"
                         android:textSize="11sp" />
                 </LinearLayout>
@@ -122,7 +122,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Planned hours"
+                        android:text="Est. hours done"
                         android:textColor="#64748B"
                         android:textSize="11sp" />
                 </LinearLayout>
@@ -133,7 +133,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Tasks scheduled this week"
+                android:text="Completed tasks this week"
                 android:textColor="#172033"
                 android:textSize="17sp"
                 android:textStyle="bold" />
@@ -155,7 +155,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Tasks by category"
+                android:text="Priority mix this week"
                 android:textColor="#172033"
                 android:textSize="17sp"
                 android:textStyle="bold" />
@@ -181,7 +181,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="● MOST COMMON TASK START TIME"
+                    android:text="● MOST PRODUCTIVE DAY"
                     android:textColor="#A3E600"
                     android:textSize="10sp"
                     android:textStyle="bold" />

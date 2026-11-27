@@ -10,6 +10,9 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -330,58 +333,111 @@ public class Calendar extends Fragment {
     private View createEventRow(final Event event) {
         LinearLayout row = new LinearLayout(getActivity());
         row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setGravity(Gravity.CENTER_VERTICAL);
         LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         rowParams.bottomMargin = dp(8);
         row.setLayoutParams(rowParams);
 
+        CheckBox checkBox = new CheckBox(getActivity());
+        checkBox.setButtonDrawable(R.drawable.task_check);
+        checkBox.setBackgroundColor(Color.TRANSPARENT);
+        checkBox.setPadding(0, 0, 0, 0);
+        checkBox.setMinWidth(dp(34));
+        checkBox.setMinHeight(dp(42));
+        checkBox.setContentDescription("Mark " + event.task.title + " complete");
+        checkBox.setChecked(event.task.done);
+        row.addView(checkBox);
+
         TextView time = new TextView(getActivity());
         time.setText(time(event.task.minutes));
         time.setTextColor(MUTED);
         time.setTextSize(12);
-        time.setPadding(0, dp(10), 0, 0);
-        time.setLayoutParams(new LinearLayout.LayoutParams(dp(48),
-                LinearLayout.LayoutParams.WRAP_CONTENT));
+        time.setGravity(Gravity.TOP);
+        time.setPadding(0, dp(12), dp(7), 0);
+        time.setLayoutParams(new LinearLayout.LayoutParams(dp(49), LinearLayout.LayoutParams.WRAP_CONTENT));
 
         LinearLayout card = new LinearLayout(getActivity());
-        card.setOrientation(LinearLayout.VERTICAL);
-        card.setPadding(dp(12), dp(8), dp(10), dp(8));
+        card.setOrientation(LinearLayout.HORIZONTAL);
+        card.setGravity(Gravity.CENTER_VERTICAL);
+        card.setPadding(dp(9), dp(8), dp(6), dp(8));
         card.setBackground(rounded(Color.WHITE, 10, BLUE_BORDER, 1));
-        card.setLayoutParams(new LinearLayout.LayoutParams(
-                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+        card.setMinimumHeight(dp(62));
+        card.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+
+        View priorityBar = new View(getActivity());
+        priorityBar.setBackgroundColor(priorityColor(event.task.priority));
+        LinearLayout.LayoutParams barParams = new LinearLayout.LayoutParams(dp(4), dp(46));
+        barParams.setMarginEnd(dp(9));
+        card.addView(priorityBar, barParams);
+
+        LinearLayout textColumn = new LinearLayout(getActivity());
+        textColumn.setOrientation(LinearLayout.VERTICAL);
+        textColumn.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
 
         TextView title = new TextView(getActivity());
         title.setText(event.task.title);
-        title.setTextColor(DARK);
-        title.setTextSize(14);
+        title.setTextColor(event.task.done ? MUTED : DARK);
+        title.setTextSize(13);
         title.setTypeface(null, Typeface.BOLD);
+        if (event.task.done) title.setPaintFlags(title.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
 
         TextView details = new TextView(getActivity());
         details.setText(time(event.task.minutes) + " – " + time(event.task.minutes + event.task.duration)
-                + "  ·  " + event.task.duration + " min"
-                + (event.task.priority == null || event.task.priority.isEmpty() ? "" : "  ·  " + event.task.priority));
+                + "  ·  " + event.task.duration + " min");
         details.setTextColor(MUTED);
-        details.setTextSize(11);
+        details.setTextSize(10);
+        textColumn.addView(title);
+        textColumn.addView(details);
+        card.addView(textColumn);
 
-        card.addView(title);
-        card.addView(details);
+        ImageButton editButton = actionIcon(R.drawable.ic_edit, "Edit task " + event.task.title);
+        editButton.setOnClickListener(v -> editTask(event.task));
+        card.addView(editButton);
+        ImageButton deleteButton = actionIcon(R.drawable.ic_delete, "Delete task " + event.task.title);
+        deleteButton.setOnClickListener(v -> confirmDelete(event));
+        card.addView(deleteButton);
+
         row.addView(time);
         row.addView(card);
 
-        card.setOnClickListener(v -> showTaskActions(event));
+        CompoundButton.OnCheckedChangeListener[] listenerHolder = new CompoundButton.OnCheckedChangeListener[1];
+        listenerHolder[0] = (button, checked) -> {
+            boolean previous = event.task.done;
+            event.task.done = checked;
+            if (!new TaskStore(getActivity()).update(event.task)) {
+                checkBox.setOnCheckedChangeListener(null);
+                checkBox.setChecked(previous);
+                checkBox.setOnCheckedChangeListener(listenerHolder[0]);
+                Toast.makeText(getActivity(), "Could not save task status", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            title.setTextColor(checked ? MUTED : DARK);
+            title.setPaintFlags(checked
+                    ? title.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
+                    : title.getPaintFlags() & ~android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
+        };
+        checkBox.setOnCheckedChangeListener(listenerHolder[0]);
         return row;
     }
 
-    // =====================================================================
-    private void showTaskActions(final Event event) {
-        new AlertDialog.Builder(getActivity())
-                .setTitle(event.task.title)
-                .setItems(new String[]{"Edit task", "Delete task"}, (dialog, choice) -> {
-                    if (choice == 0) editTask(event.task);
-                    else confirmDelete(event);
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
+    private ImageButton actionIcon(int drawableId, String description) {
+        ImageButton button = new ImageButton(getActivity());
+        button.setImageResource(drawableId);
+        button.setBackgroundColor(Color.TRANSPARENT);
+        button.setPadding(dp(8), dp(8), dp(8), dp(8));
+        button.setContentDescription(description);
+        button.setScaleType(android.widget.ImageView.ScaleType.CENTER_INSIDE);
+        button.setLayoutParams(new LinearLayout.LayoutParams(dp(36), dp(40)));
+        return button;
+    }
+
+    private int priorityColor(String priority) {
+        if (priority == null) return Color.rgb(148, 163, 184);
+        if ("HIGH".equalsIgnoreCase(priority)) return Color.rgb(239, 68, 68);
+        if ("LOW".equalsIgnoreCase(priority)) return Color.rgb(34, 197, 94);
+        if ("MEDIUM".equalsIgnoreCase(priority)) return BLUE;
+        return Color.rgb(148, 163, 184);
     }
 
     private void editTask(final Task task) {
@@ -518,13 +574,16 @@ public class Calendar extends Fragment {
 
     private void confirmDelete(final Event event) {
         new AlertDialog.Builder(getActivity())
-                .setTitle("Delete event?")
+                .setTitle("Delete task?")
                 .setMessage(event.task.title)
-                .setPositiveButton("Delete", (d, w) -> {
+                .setPositiveButton("Delete", (dialog, which) -> {
+                    if (!new TaskStore(getActivity()).delete(event.task.id)) {
+                        Toast.makeText(getActivity(), "Could not delete task", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     events.remove(event);
-                    new TaskStore(getActivity()).delete(event.task.id);
                     renderAll();
-                    Toast.makeText(getActivity(), "Event deleted", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Task deleted", Toast.LENGTH_SHORT).show();
                 })
                 .setNegativeButton("Cancel", null)
                 .show();

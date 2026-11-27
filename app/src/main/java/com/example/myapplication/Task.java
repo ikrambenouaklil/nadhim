@@ -1,7 +1,8 @@
 package com.example.myapplication;
 
 
-public class Task {
+public class Task implements java.io.Serializable {
+    private static final long serialVersionUID = 1L;
     public long id;
     public String title;
     public String date;

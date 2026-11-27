@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/assistantButton"
+    android:layout_width="56dp"
+    android:layout_height="56dp"
+    android:background="@drawable/bg_assistant_button"
+    android:contentDescription="Open Nadhim chat"
+    android:elevation="8dp"
+    android:padding="15dp"
+    android:scaleType="centerInside"
+    android:src="@drawable/ic_robot_face" />

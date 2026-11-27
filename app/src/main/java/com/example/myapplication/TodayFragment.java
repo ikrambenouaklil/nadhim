@@ -1,12 +1,14 @@
 package com.example.myapplication;
 
 import android.app.Fragment;
+import android.app.AlertDialog;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -93,12 +95,17 @@ public class TodayFragment extends Fragment {
         String todayKey = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
         todaysTasks.clear();
 
-        // Keep only this user's tasks whose date is today.
+        // Keep today's tasks visible and carry unfinished overdue tasks forward.
         for (Task task : new TaskStore(getActivity()).getAll()) {
-            if (todayKey.equals(task.date)) todaysTasks.add(task);
+            if (task.date == null) continue;
+            boolean dueToday = todayKey.equals(task.date);
+            boolean overdue = task.date.compareTo(todayKey) < 0 && !task.done;
+            if (dueToday || overdue) todaysTasks.add(task);
         }
-        Collections.sort(todaysTasks, (first, second) ->
-                Integer.compare(first.minutes, second.minutes));
+        Collections.sort(todaysTasks, (first, second) -> {
+            int dateOrder = first.date.compareTo(second.date);
+            return dateOrder != 0 ? dateOrder : Integer.compare(first.minutes, second.minutes);
+        });
 
         tasksContainer.removeAllViews();
         for (Task task : todaysTasks) addTaskRow(task);
@@ -113,24 +120,56 @@ public class TodayFragment extends Fragment {
         TextView title = row.findViewById(R.id.todayTaskTitle);
         TextView time = row.findViewById(R.id.todayTaskTime);
         TextView priority = row.findViewById(R.id.todayTaskPriority);
+        ImageButton editButton = row.findViewById(R.id.todayTaskEdit);
+        ImageButton deleteButton = row.findViewById(R.id.todayTaskDelete);
 
         title.setText(task.title);
-        time.setText(formatTime(task.minutes) + " – "
-                + formatTime(task.minutes + task.duration) + "  ·  "
-                + task.duration + " min");
+        boolean overdue = task.date.compareTo(new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date())) < 0 && !task.done;
+        String schedule = formatTime(task.minutes) + " – "
+                + formatTime(task.minutes + task.duration) + "  ·  " + task.duration + " min";
+        time.setText(overdue ? "Overdue · " + formatDate(task.date) + " · " + schedule : schedule);
         showPriority(priority, task.priority);
 
         checkBox.setContentDescription(task.title);
+        editButton.setContentDescription("Edit task " + task.title);
+        deleteButton.setContentDescription("Delete task " + task.title);
         checkBox.setChecked(task.done);
         updateTitleStyle(title, task.done);
-        checkBox.setOnCheckedChangeListener((button, isChecked) -> {
-            task.done = isChecked;
-            updateTitleStyle(title, isChecked);
-            if (!new TaskStore(getActivity()).update(task)) {
-                Toast.makeText(getActivity(), "Could not save task status", Toast.LENGTH_SHORT).show();
-            }
-            updateProgress();
-        });
+        checkBox.setOnCheckedChangeListener((button, isChecked) -> saveTaskStatus(task, checkBox, title, isChecked));
+        editButton.setOnClickListener(v -> TodayTaskEditor.show(getActivity(), task, this::loadTodaysTasks));
+        deleteButton.setOnClickListener(v -> confirmDelete(task));
+        tasksContainer.addView(row);
+    }
+
+    private void saveTaskStatus(Task task, CheckBox checkBox, TextView title, boolean checked) {
+        boolean previous = task.done;
+        task.done = checked;
+        if (!new TaskStore(getActivity()).update(task)) {
+            checkBox.setOnCheckedChangeListener(null);
+            checkBox.setChecked(previous);
+            checkBox.setOnCheckedChangeListener((button, value) -> saveTaskStatus(task, checkBox, title, value));
+            task.done = previous;
+            Toast.makeText(getActivity(), "Could not save task status", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        updateTitleStyle(title, checked);
+        updateProgress();
+    }
+
+    private void confirmDelete(Task task) {
+        new AlertDialog.Builder(getActivity())
+                .setTitle("Delete task?")
+                .setMessage(task.title)
+                .setPositiveButton("Delete", (dialog, which) -> {
+                    if (!new TaskStore(getActivity()).delete(task.id)) {
+                        Toast.makeText(getActivity(), "Could not delete task", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    Toast.makeText(getActivity(), "Task deleted", Toast.LENGTH_SHORT).show();
+                    loadTodaysTasks();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     private void showPriority(TextView badge, String value) {
@@ -163,12 +202,16 @@ public class TodayFragment extends Fragment {
     }
 
     private void updateProgress() {
+        String todayKey = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
         int completed = 0;
+        int total = 0;
         for (Task task : todaysTasks) {
-            if (task.done) completed++;
+            if (todayKey.equals(task.date)) {
+                total++;
+                if (task.done) completed++;
+            }
         }
 
-        int total = todaysTasks.size();
         int percent = total == 0 ? 0 : (completed * 100) / total;
         TextView subtitle = findViewById(R.id.progress_subtitle);
         TextView percentText = findViewById(R.id.progress_percent);
@@ -178,6 +221,14 @@ public class TodayFragment extends Fragment {
         bar.setProgress(percent);
     }
 
+    private String formatDate(String dateKey) {
+        try {
+            Date date = new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(dateKey);
+            return new SimpleDateFormat("MMM d", Locale.ENGLISH).format(date);
+        } catch (java.text.ParseException | NullPointerException ignored) {
+            return dateKey;
+        }
+    }
     private String formatTime(int totalMinutes) {
         int minutesInDay = 24 * 60;
         int safeMinutes = ((totalMinutes % minutesInDay) + minutesInDay) % minutesInDay;

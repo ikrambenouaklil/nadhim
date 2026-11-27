@@ -52,7 +52,7 @@
         <item name="android:orientation">horizontal</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:paddingStart">14dp</item>
-        <item name="android:paddingEnd">22dp</item>
+        <item name="android:paddingEnd">8dp</item>
     </style>
 
     <!-- The round tick box on the left of a task card.

@@ -29,4 +29,24 @@
         android:id="@+id/todayTaskPriority"
         style="@style/Text.Badge"
         android:visibility="gone" />
+
+    <ImageButton
+        android:id="@+id/todayTaskEdit"
+        android:layout_width="32dp"
+        android:layout_height="40dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="Edit task"
+        android:padding="7dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_edit" />
+
+    <ImageButton
+        android:id="@+id/todayTaskDelete"
+        android:layout_width="32dp"
+        android:layout_height="40dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="Delete task"
+        android:padding="7dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_delete" />
 </LinearLayout>

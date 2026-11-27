@@ -1,6 +1,8 @@
 package com.example.myapplication;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.app.Fragment;
 import android.app.TimePickerDialog;
 import android.graphics.Color;
@@ -21,6 +23,8 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 public class AddTask extends Fragment {
+    private static final int REQUEST_REVIEW = 51;
+    private static final String EXTRA_TASK = "review_task";
     private static final int BLUE = Color.rgb(37, 99, 235);
     private static final int BLUE_DARK = Color.rgb(29, 78, 216);
     private static final int BLUE_CHIP = Color.rgb(219, 234, 254);
@@ -159,7 +163,8 @@ public class AddTask extends Fragment {
 
     private void setupSaveButton() {
         TextView button = findViewById(R.id.saveTaskButton);
-        GradientDrawable gradient = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[]{BLUE_DARK, BLUE});
+        GradientDrawable gradient = new GradientDrawable(
+                GradientDrawable.Orientation.LEFT_RIGHT, new int[]{BLUE_DARK, BLUE});
         gradient.setCornerRadius(dp(16));
         button.setBackground(gradient);
         button.setOnClickListener(v -> {
@@ -173,24 +178,38 @@ public class AddTask extends Fragment {
                 Toast.makeText(getActivity(), "Choose both a date and a time", Toast.LENGTH_SHORT).show();
                 return;
             }
+
             Task task = new Task(System.currentTimeMillis(), title,
                     new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(deadline.getTime()),
                     deadline.get(java.util.Calendar.HOUR_OF_DAY) * 60 + deadline.get(java.util.Calendar.MINUTE),
                     duration, detailsInput.getText().toString().trim(), "", priority, false);
-            if (!new TaskStore(getActivity()).add(task)) {
-                Toast.makeText(getActivity(), "Could not save task. Please sign in again.", Toast.LENGTH_LONG).show();
-                return;
-            }
-            resetForm();
-            String today = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new java.util.Date());
-            if (today.equals(task.date)) {
-                Toast.makeText(getActivity(), "Task added to Today", Toast.LENGTH_SHORT).show();
-                ((MainActivity) getActivity()).showTodayTab();
-            } else {
-                Toast.makeText(getActivity(), "Task added to your calendar", Toast.LENGTH_SHORT).show();
-                ((MainActivity) getActivity()).showCalendarTab(task.date);
-            }
+            Intent review = new Intent(getActivity(), TaskReviewActivity.class);
+            review.putExtra(EXTRA_TASK, task);
+            startActivityForResult(review, REQUEST_REVIEW);
         });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode != REQUEST_REVIEW || resultCode != Activity.RESULT_OK || data == null) return;
+
+        Task task = (Task) data.getSerializableExtra(EXTRA_TASK);
+        if (task == null) return;
+        if (!new TaskStore(getActivity()).add(task)) {
+            Toast.makeText(getActivity(), "Could not save task. Please sign in again.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        resetForm();
+        String today = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new java.util.Date());
+        if (today.equals(task.date)) {
+            Toast.makeText(getActivity(), "Task added to Today", Toast.LENGTH_SHORT).show();
+            ((MainActivity) getActivity()).showTodayTab();
+        } else {
+            Toast.makeText(getActivity(), "Task added to your calendar", Toast.LENGTH_SHORT).show();
+            ((MainActivity) getActivity()).showCalendarTab(task.date);
+        }
     }
 
     private void resetForm() {
