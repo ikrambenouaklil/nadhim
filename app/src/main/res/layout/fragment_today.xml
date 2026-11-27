@@ -79,7 +79,7 @@
                     android:textColor="@color/white"
                     android:textSize="10sp" />
 
-                <!-- "60%" in green on the right: filled in from Java. -->
+                <!-- % in green on the right: filled in from Java. -->
                 <TextView
                     android:id="@+id/progress_percent"
                     style="@style/Text"

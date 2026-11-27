@@ -11,18 +11,22 @@ public final class SessionManager {
 
     private SessionManager() { }
 
+    // u write the context and it gets the preferences
     private static SharedPreferences preferences(Context context) {
         return context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
     }
+    // u write the context + name key and it gets the value of a
+    // pereferences if the key not exists it returns null
 
     public static String getName(Context context) {
         return preferences(context).getString(NAME_KEY, "");
     }
-
+    // u write the context + email key and it gets the value of a
+    // pereferences if the key not exists it returns null
     public static String getEmail(Context context) {
         return preferences(context).getString(EMAIL_KEY, "");
     }
-
+    // u write the context + name + email and it saves the user infos in the context prefer
     public static void save(Context context, String name, String email) {
         preferences(context).edit().putString(NAME_KEY, name).putString(EMAIL_KEY, email).apply();
     }

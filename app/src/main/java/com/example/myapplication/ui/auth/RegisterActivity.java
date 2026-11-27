@@ -68,7 +68,7 @@ public class RegisterActivity extends Activity {
             accounts.save(e, userName, passwordHash);
             SessionManager.save(this, userName, e);
 
-               // once i completed the next interface is main Activity
+               // once i completed the next interface swipe to main Activity
             startActivity(new Intent(this, MainActivity.class));
             finish();
         });
