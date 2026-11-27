@@ -9,8 +9,9 @@ import android.widget.TextView;
 
 import com.example.myapplication.data.AccountStore;
 import com.example.myapplication.data.SessionManager;
+import com.example.myapplication.ui.NadhimActivity;
 
-public class WelcomeActivity extends Activity {
+public class WelcomeActivity extends NadhimActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

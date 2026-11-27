@@ -8,6 +8,7 @@ public final class SessionManager {
     private static final String PREFERENCES = "nadhim_preferences";
     private static final String NAME_KEY = "name";
     private static final String EMAIL_KEY = "email";
+    private static final String DARK_MODE_KEY = "dark_mode";
 
     private SessionManager() { }
 
@@ -26,12 +27,20 @@ public final class SessionManager {
     public static String getEmail(Context context) {
         return preferences(context).getString(EMAIL_KEY, "");
     }
+
+    public static boolean isDarkMode(Context context) {
+        return preferences(context).getBoolean(DARK_MODE_KEY, false);
+    }
+
+    public static void setDarkMode(Context context, boolean dark) {
+        preferences(context).edit().putBoolean(DARK_MODE_KEY, dark).apply();
+    }
     // u write the context + name + email and it saves the user infos in the context prefer
     public static void save(Context context, String name, String email) {
         preferences(context).edit().putString(NAME_KEY, name).putString(EMAIL_KEY, email).apply();
     }
 
     public static void clear(Context context) {
-        preferences(context).edit().clear().apply();
+        preferences(context).edit().remove(NAME_KEY).remove(EMAIL_KEY).apply();
     }
 }

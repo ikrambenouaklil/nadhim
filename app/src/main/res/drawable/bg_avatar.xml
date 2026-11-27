@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Round blue profile picture placeholder (the "S" circle in the header).
-     Radial gradient: deep blue in the middle, lighter blue at the edge. -->
+<!-- Dark navy profile circle with a restrained Figma-blue edge and soft center glow. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval">
     <gradient
         android:type="radial"
-        android:gradientRadius="18dp"
-        android:startColor="@color/brand_blue"
-        android:centerColor="@color/brand_blue"
-        android:endColor="@color/brand_blue_light" />
+        android:gradientRadius="48dp"
+        android:startColor="#123C87"
+        android:centerColor="#0A255D"
+        android:endColor="#061638" />
+    <stroke android:width="1dp" android:color="@color/brand_blue_mid" />
 </shape>

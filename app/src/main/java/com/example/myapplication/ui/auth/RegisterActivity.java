@@ -14,8 +14,9 @@ import com.example.myapplication.data.AccountStore;
 import com.example.myapplication.data.SessionManager;
 import com.example.myapplication.util.PasswordHasher;
 import com.example.myapplication.ui.main.MainActivity;
+import com.example.myapplication.ui.NadhimActivity;
 
-public class RegisterActivity extends Activity {
+public class RegisterActivity extends NadhimActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
