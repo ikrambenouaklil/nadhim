@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
+import android.widget.ImageButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -42,6 +45,21 @@ public class RegisterActivity extends Activity {
         EditText name = findViewById(R.id.registerName);
         EditText email = findViewById(R.id.registerEmail);
         EditText password = findViewById(R.id.registerPassword);
+        ImageButton passwordVisibility = findViewById(R.id.toggleRegisterPassword);
+        passwordVisibility.setOnClickListener(view -> {
+            int cursorPosition = password.getSelectionStart();
+            boolean hidden = password.getTransformationMethod() instanceof PasswordTransformationMethod;
+            if (hidden) {
+                password.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                passwordVisibility.setImageResource(R.drawable.ic_visibility);
+                passwordVisibility.setContentDescription(getString(R.string.hide_password));
+            } else {
+                password.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                passwordVisibility.setImageResource(R.drawable.ic_visibility_off);
+                passwordVisibility.setContentDescription(getString(R.string.show_password));
+            }
+            password.setSelection(Math.max(cursorPosition, 0));
+        });
 
         // check if the user entred the infos ( not empty )
         findViewById(R.id.registerSubmit).setOnClickListener(view -> {

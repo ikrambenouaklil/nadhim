@@ -35,20 +35,22 @@ public class Calendar extends Fragment {
 
     private View contentView;
 
+    public void showDate(String dateKey) {
+        try {
+            java.util.Date date = new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(dateKey);
+            if (date != null) {
+                selectedDate.setTime(date);
+                if (contentView != null) renderAll();
+            }
+        } catch (java.text.ParseException ignored) { }
+    }
+
     // ---- Event model ----
     private static class Event {
-        long id;
-        String date;      // yyyy-MM-dd
-        int minutes;      // minutes since midnight
-        int duration;     // in minutes
-        String title;
+        final Task task;
 
-        Event(long id, String date, int minutes, int duration, String title) {
-            this.id = id;
-            this.date = date;
-            this.minutes = minutes;
-            this.duration = duration;
-            this.title = title;
+        Event(Task task) {
+            this.task = task;
         }
     }
 
@@ -334,7 +336,7 @@ public class Calendar extends Fragment {
         row.setLayoutParams(rowParams);
 
         TextView time = new TextView(getActivity());
-        time.setText(time(event.minutes));
+        time.setText(time(event.task.minutes));
         time.setTextColor(MUTED);
         time.setTextSize(12);
         time.setPadding(0, dp(10), 0, 0);
@@ -349,14 +351,15 @@ public class Calendar extends Fragment {
                 0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
 
         TextView title = new TextView(getActivity());
-        title.setText(event.title);
+        title.setText(event.task.title);
         title.setTextColor(DARK);
         title.setTextSize(14);
         title.setTypeface(null, Typeface.BOLD);
 
         TextView details = new TextView(getActivity());
-        details.setText(time(event.minutes) + " – " + time(event.minutes + event.duration)
-                + "  ·  " + event.duration + " min");
+        details.setText(time(event.task.minutes) + " – " + time(event.task.minutes + event.task.duration)
+                + "  ·  " + event.task.duration + " min"
+                + (event.task.priority == null || event.task.priority.isEmpty() ? "" : "  ·  " + event.task.priority));
         details.setTextColor(MUTED);
         details.setTextSize(11);
 
@@ -365,24 +368,161 @@ public class Calendar extends Fragment {
         row.addView(time);
         row.addView(card);
 
-        card.setOnLongClickListener(v -> {
-            confirmDelete(event);
-            return true;
-        });
+        card.setOnClickListener(v -> showTaskActions(event));
         return row;
     }
 
     // =====================================================================
+    private void showTaskActions(final Event event) {
+        new AlertDialog.Builder(getActivity())
+                .setTitle(event.task.title)
+                .setItems(new String[]{"Edit task", "Delete task"}, (dialog, choice) -> {
+                    if (choice == 0) editTask(event.task);
+                    else confirmDelete(event);
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void editTask(final Task task) {
+        LinearLayout form = new LinearLayout(getActivity());
+        form.setOrientation(LinearLayout.VERTICAL);
+        form.setPadding(dp(20), dp(8), dp(20), 0);
+        form.addView(formLabel("Task name"));
+        android.widget.EditText titleInput = new android.widget.EditText(getActivity());
+        titleInput.setSingleLine(true);
+        titleInput.setText(task.title);
+        form.addView(titleInput);
+        form.addView(formLabel("Notes"));
+        android.widget.EditText notesInput = new android.widget.EditText(getActivity());
+        notesInput.setMinLines(2);
+        notesInput.setGravity(Gravity.TOP | Gravity.START);
+        notesInput.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        notesInput.setText(task.notes == null ? "" : task.notes);
+        form.addView(notesInput);
+
+        form.addView(formLabel("Priority"));
+        android.widget.Spinner priorityPicker = new android.widget.Spinner(getActivity());
+        String[] priorities = {"None", "Low", "Medium", "High"};
+        android.widget.ArrayAdapter<String> adapter = new android.widget.ArrayAdapter<>(getActivity(),
+                android.R.layout.simple_spinner_item, priorities);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        priorityPicker.setAdapter(adapter);
+        String currentPriority = task.priority == null ? "" : task.priority.toUpperCase(Locale.ENGLISH);
+        priorityPicker.setSelection("LOW".equals(currentPriority) ? 1
+                : "MEDIUM".equals(currentPriority) ? 2 : "HIGH".equals(currentPriority) ? 3 : 0);
+        form.addView(priorityPicker);
+
+        java.util.Calendar editedDate = java.util.Calendar.getInstance();
+        try {
+            java.util.Date parsed = new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(task.date);
+            if (parsed != null) editedDate.setTime(parsed);
+        } catch (java.text.ParseException ignored) { }
+        final int[] editedMinutes = {task.minutes};
+        form.addView(formLabel("Deadline date"));
+        TextView dateButton = pickerButton("Date: " + fmt("EEE, MMM d, yyyy", editedDate));
+        dateButton.setOnClickListener(v -> new android.app.DatePickerDialog(getActivity(), (picker, year, month, day) -> {
+            editedDate.set(year, month, day);
+            dateButton.setText("Date: " + fmt("EEE, MMM d, yyyy", editedDate));
+        }, editedDate.get(java.util.Calendar.YEAR), editedDate.get(java.util.Calendar.MONTH),
+                editedDate.get(java.util.Calendar.DAY_OF_MONTH)).show());
+        form.addView(dateButton);
+
+        form.addView(formLabel("Deadline time"));
+        TextView timeButton = pickerButton("Time: " + time(editedMinutes[0]));
+        timeButton.setOnClickListener(v -> new android.app.TimePickerDialog(getActivity(), (picker, hour, minute) -> {
+            editedMinutes[0] = hour * 60 + minute;
+            timeButton.setText("Time: " + time(editedMinutes[0]));
+        }, editedMinutes[0] / 60, editedMinutes[0] % 60, true).show());
+        form.addView(timeButton);
+
+        form.addView(formLabel("Estimated duration"));
+        LinearLayout durationRow = new LinearLayout(getActivity());
+        durationRow.setGravity(Gravity.CENTER);
+        android.widget.NumberPicker hours = new android.widget.NumberPicker(getActivity());
+        hours.setMinValue(0);
+        hours.setMaxValue(72);
+        hours.setValue(task.duration / 60);
+        android.widget.NumberPicker minutes = new android.widget.NumberPicker(getActivity());
+        String[] minuteOptions = {"00", "15", "30", "45"};
+        minutes.setMinValue(0);
+        minutes.setMaxValue(3);
+        minutes.setDisplayedValues(minuteOptions);
+        minutes.setValue((task.duration % 60) / 15);
+        durationRow.addView(hours);
+        durationRow.addView(minutes);
+        form.addView(durationRow);
+
+        android.widget.ScrollView editScroll = new android.widget.ScrollView(getActivity());
+        editScroll.addView(form);
+
+        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+                .setTitle("Edit task")
+                .setView(editScroll)
+                .setPositiveButton("Save", null)
+                .setNegativeButton("Cancel", null)
+                .create();
+        dialog.setOnShowListener(ignored -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String newTitle = titleInput.getText().toString().trim();
+            int newDuration = hours.getValue() * 60 + minutes.getValue() * 15;
+            if (newTitle.isEmpty()) {
+                titleInput.setError("Enter a task name");
+                return;
+            }
+            if (newDuration == 0) {
+                Toast.makeText(getActivity(), "Duration must be at least 15 minutes", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            task.title = newTitle;
+            task.notes = notesInput.getText().toString().trim();
+            task.date = dateKey(editedDate);
+            task.minutes = editedMinutes[0];
+            task.duration = newDuration;
+            int selectedPriority = priorityPicker.getSelectedItemPosition();
+            task.priority = selectedPriority == 0 ? "" : priorities[selectedPriority].toUpperCase(Locale.ENGLISH);
+            if (!new TaskStore(getActivity()).update(task)) {
+                Toast.makeText(getActivity(), "Could not save task changes", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            loadEvents();
+            renderAll();
+            Toast.makeText(getActivity(), "Task updated", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        }));
+        dialog.show();
+    }
+
+    private TextView formLabel(String text) {
+        TextView label = new TextView(getActivity());
+        label.setText(text);
+        label.setTextColor(DARK);
+        label.setTextSize(13);
+        label.setTypeface(null, Typeface.BOLD);
+        label.setPadding(0, dp(12), 0, dp(2));
+        return label;
+    }
+
+    private TextView pickerButton(String text) {
+        TextView button = new TextView(getActivity());
+        button.setText(text);
+        button.setTextColor(DARK);
+        button.setTextSize(14);
+        button.setGravity(Gravity.CENTER_VERTICAL);
+        button.setPadding(dp(12), 0, dp(12), 0);
+        button.setBackground(rounded(Color.WHITE, 8, BLUE_BORDER, 1));
+        button.setMinHeight(dp(44));
+        return button;
+    }
     // Deletion
     // =====================================================================
 
     private void confirmDelete(final Event event) {
         new AlertDialog.Builder(getActivity())
                 .setTitle("Delete event?")
-                .setMessage(event.title)
+                .setMessage(event.task.title)
                 .setPositiveButton("Delete", (d, w) -> {
                     events.remove(event);
-                    new TaskStore(getActivity()).delete(event.id);
+                    new TaskStore(getActivity()).delete(event.task.id);
                     renderAll();
                     Toast.makeText(getActivity(), "Event deleted", Toast.LENGTH_SHORT).show();
                 })
@@ -397,9 +537,9 @@ public class Calendar extends Fragment {
     private List<Event> eventsFor(String dateKey) {
         List<Event> result = new ArrayList<>();
         for (Event e : events) {
-            if (e.date.equals(dateKey)) result.add(e);
+            if (e.task.date.equals(dateKey)) result.add(e);
         }
-        Collections.sort(result, (a, b) -> Integer.compare(a.minutes, b.minutes));
+        Collections.sort(result, (a, b) -> Integer.compare(a.task.minutes, b.task.minutes));
         return result;
     }
 
@@ -407,7 +547,7 @@ public class Calendar extends Fragment {
         events.clear();
         // Load real tasks from TaskStore and adapt them for the calendar display.
         for (Task task : new TaskStore(getActivity()).getAll()) {
-            events.add(new Event(task.id, task.date, task.minutes, task.duration, task.title));
+            events.add(new Event(task));
         }
     }
 

@@ -53,6 +53,19 @@ public class MainActivity extends Activity {
         super.onSaveInstanceState(outState);
     }
 
+    void showTodayTab() {
+        showTab(0);
+    }
+
+    void showCalendarTab(String dateKey) {
+        showTab(1);
+        getFragmentManager().executePendingTransactions();
+        Fragment calendar = getFragmentManager().findFragmentByTag(TAB_TAGS[1]);
+        if (calendar instanceof Calendar) {
+            ((Calendar) calendar).showDate(dateKey);
+        }
+    }
+
     void showCalendarTab() {
         showTab(1);
     }
