@@ -35,6 +35,18 @@ public class TaskStore {
                 : TASKS_KEY_PREFIX + email.trim();
     }
 
+    /** Moves this user's local task list to a new email key without overwriting another list. */
+    public static boolean moveTasksToEmail(Context context, String oldEmail, String newEmail) {
+        String oldKey = TASKS_KEY_PREFIX + oldEmail.trim();
+        String newKey = TASKS_KEY_PREFIX + newEmail.trim();
+        if (oldKey.equals(newKey)) return true;
+        SharedPreferences tasks = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
+        if (!tasks.contains(oldKey)) return true;
+        if (tasks.contains(newKey)) return false;
+        return tasks.edit().putString(newKey, tasks.getString(oldKey, "[]"))
+                .remove(oldKey).commit();
+    }
+
     /** Returns the tasks saved for the currently signed-in user. */
     public List<Task> getAll() {
         List<Task> tasks = new ArrayList<>();

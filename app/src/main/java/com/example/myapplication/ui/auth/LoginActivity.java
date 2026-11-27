@@ -15,8 +15,9 @@ import com.example.myapplication.data.AccountStore;
 import com.example.myapplication.data.SessionManager;
 import com.example.myapplication.util.PasswordHasher;
 import com.example.myapplication.ui.main.MainActivity;
+import com.example.myapplication.ui.NadhimActivity;
 
-public class LoginActivity extends Activity {
+public class LoginActivity extends NadhimActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +29,7 @@ public class LoginActivity extends Activity {
         EditText password = findViewById(R.id.loginPassword);
          // eye button
         ImageButton passwordVisibility = findViewById(R.id.togglePasswordVisibility);
-        passwordVisibility.setOnClickListener(view -> {
+        passwordVisibility.setOnClickListener( view  -> {
 
             // the cursor | in the text
             int cursorPosition = password.getSelectionStart();

@@ -5,10 +5,11 @@
          - statusBarColor + windowLightStatusBar: the phone's top bar (clock,
            battery) uses our background color, with dark icons on it. -->
     <style name="AppTheme" parent="android:style/Theme.Material.Light.NoActionBar">
-        <item name="android:windowBackground">@color/screen_background</item>
+        <item name="android:windowBackground">@drawable/bg_screen_background</item>
         <item name="android:statusBarColor">@color/screen_background</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:navigationBarColor">@color/screen_background</item>
+        <item name="android:colorAccent">@color/brand_blue</item>
     </style>
 
     <!-- Reusable text styles. Instead of repeating the font, size and color

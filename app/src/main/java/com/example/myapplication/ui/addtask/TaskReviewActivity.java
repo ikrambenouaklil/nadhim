@@ -2,6 +2,7 @@ package com.example.myapplication.ui.addtask;
 import com.example.myapplication.R;
 import com.example.myapplication.data.Task;
 import com.example.myapplication.util.DateUtils;
+import com.example.myapplication.ui.NadhimActivity;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -9,7 +10,7 @@ import android.view.View;
 import android.widget.TextView;
 
 
-public class TaskReviewActivity extends Activity {
+public class TaskReviewActivity extends NadhimActivity {
     static final String EXTRA_TASK = "review_task";
     private Task task ;
 

@@ -5,6 +5,9 @@ import com.example.myapplication.ui.today.TodayFragment;
 import com.example.myapplication.ui.calendar.CalendarFragment;
 import com.example.myapplication.ui.addtask.AddTaskFragment;
 import com.example.myapplication.ui.insights.InsightsFragment;
+import com.example.myapplication.ui.NadhimActivity;
+import com.example.myapplication.ui.profile.ProfileActivity;
+import com.example.myapplication.ui.theme.ThemeManager;
 import com.example.myapplication.util.UiUtils;
 
 import android.app.Activity;
@@ -32,7 +35,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class MainActivity extends Activity {
+public class MainActivity extends NadhimActivity {
 
     private static final String STATE_SELECTED_TAB = "selected_tab";
     private static final String[] TAB_TAGS = {"today", "calendar", "add", "insights"};
@@ -52,8 +55,8 @@ public class MainActivity extends Activity {
         hostRoot = findViewById(R.id.hostRoot);
 
         TextView avatar = findViewById(R.id.avatar);
-        String name = SessionManager.getName(this).trim();
-        avatar.setText(name.isEmpty() ? "" : name.substring(0, 1).toUpperCase(java.util.Locale.ENGLISH));
+        updateProfileAvatar(avatar);
+        avatar.setOnClickListener(v -> startActivity(new Intent(this, ProfileActivity.class)));
 
         findViewById(R.id.nav_today).setOnClickListener(view -> showTab(0));
         findViewById(R.id.nav_calendar).setOnClickListener(view -> showTab(1));
@@ -73,6 +76,23 @@ public class MainActivity extends Activity {
                 showTab(0);
             }
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (ThemeManager.needsRecreate(this)) {
+            recreate();
+            return;
+        }
+        TextView avatar = findViewById(R.id.avatar);
+        if (avatar != null) updateProfileAvatar(avatar);
+    }
+
+    private void updateProfileAvatar(TextView avatar) {
+        if (avatar == null) return;
+        String name = SessionManager.getName(this).trim();
+        avatar.setText(name.isEmpty() ? "" : name.substring(0, 1).toUpperCase(java.util.Locale.ENGLISH));
     }
 
     @Override
