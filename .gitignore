@@ -1,16 +1,6 @@
-# Gradle / build output (auto-generated, never commit)
-.gradle/
+app/build/
 build/
-**/build/
-
-# Local machine settings
+.gradle/
 local.properties
-
-# IDE files
 .idea/
-*.iml
-.vscode/
-
-# OS junk
-.DS_Store
-Thumbs.db
+*.rar

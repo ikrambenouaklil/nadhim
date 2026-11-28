@@ -1,21 +1,35 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- All the text shown on screen. Keeping text here (instead of typing it
+<?xml version="1.0" encoding="utf-8"?><!-- All the text shown on screen. Keeping text here (instead of typing it
      directly in the layout) makes it easy to translate the app later,
      for example by adding a values-fr/strings.xml file. -->
 <resources>
+    <string name="switch_to_dark_mode">Switch to dark mode</string>
+    <string name="switch_to_light_mode">Switch to light mode</string>
     <string name="app_name">Nadhim</string>
 
     <!-- Header -->
     <string name="tagline">SMART  ·  ORGANIZATION  ·  PRODUCTIVITY</string>
     <string name="logo_description">Nadhim</string>
     <string name="profile_description">Profile</string>
+    <string name="notifications_button">Open notifications</string>
+    <string name="notifications_title">Notifications</string>
+    <string name="notifications_subtitle">Your reminders and wellbeing notes</string>
+    <string name="notifications_deadlines">Deadlines</string>
+    <string name="notifications_no_deadlines">No overdue or upcoming deadlines this week.</string>
+    <string name="notification_deadline_label">DEADLINE REMINDER</string>
+    <string name="notification_overdue">Overdue · %1$s · %2$s</string>
+    <string name="notification_due_today">Due today · %1$s</string>
+    <string name="notification_due_tomorrow">Due tomorrow · %1$s</string>
+    <string name="notification_due_date">Due %1$s · %2$s</string>
+    <string name="notification_untitled_task">Untitled task</string>
+    <string name="notification_rest_label">WELLBEING</string>
+    <string name="notification_rest_title">Time to recharge</string>
+    <string name="notification_rest_body">Take a short break, stretch, and drink some water before your next task.</string>
 
     <!-- Welcome screen (shown only the first time) -->
-    <string name="welcome_title">Welcome to Nadhim 👋</string>
-    <string name="welcome_subtitle">What should we call you?</string>
-    <string name="name_hint">Your name</string>
-    <string name="welcome_continue">Continue</string>
-    <string name="name_required">Please enter your name</string>
+    <string name="show_password">Show password</string>
+    <string name="hide_password">Hide password</string>
+    <string name="forgot_password_title">Password recovery</string>
+    <string name="forgot_password_message">Password recovery is not available yet because accounts are stored only on this device. Email recovery will be available after account services are connected.</string>
 
     <!-- Greeting. %1$s is replaced by the user name from the Java code. -->
     <string name="greeting_morning">Good morning, %1$s 👋</string>
@@ -31,15 +45,6 @@
 
     <!-- Priorities -->
     <string name="your_priorities">Your priorities</string>
-    <string name="task1_title">Finish project proposal</string>
-    <string name="task1_time">10:00 – 11:30</string>
-    <string name="task2_title">Review lecture notes</string>
-    <string name="task2_time">13:00 – 14:00</string>
-    <string name="task3_title">Plan weekly meals</string>
-    <string name="task3_time">17:00 – 17:30</string>
-    <string name="priority_high">HIGH</string>
-    <string name="priority_med">MED</string>
-    <string name="priority_low">LOW</string>
 
     <!-- Nadhim suggestion card -->
     <string name="suggestion_label">✦  NADHIM SUGGESTS</string>
@@ -55,6 +60,8 @@
     <string name="nav_add">Add</string>
     <string name="nav_insights_icon">◔</string>
     <string name="nav_insights">Insights</string>
-    <string name="coming_soon">%1$s screen coming soon</string>
-    <string name="already_on_today">You are on the Today screen</string>
+    <!-- Strings used for fragments for navigation -->
+
+
+    <string name="no_tasks_today">No tasks planned for today yet.</string>
 </resources>

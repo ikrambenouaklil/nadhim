@@ -1,255 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8FAFC"
-    android:fillViewport="true">
+    android:background="@drawable/bg_screen_background">
 
-    <LinearLayout
+    <include layout="@layout/include_background" />
+
+    <ImageView
+        android:layout_width="262dp"
+        android:layout_height="344dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="-40dp"
+        android:adjustViewBounds="true"
+        android:contentDescription="@null"
+        android:scaleType="fitCenter"
+        android:src="@drawable/figma_welcome_robot" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingStart="24dp"
-        android:paddingTop="40dp"
-        android:paddingEnd="24dp"
-        android:paddingBottom="28dp">
+        android:layout_height="match_parent">
 
-        <!-- Logo -->
-        <TextView
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideTop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nadhim"
-            android:textColor="#2563EB"
-            android:textSize="34sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Make it happen · manage your time"
-            android:textColor="#64748B"
-            android:textSize="12sp" />
-
-        <!-- Message de bienvenue -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="Hi, welcome to Nadhim!"
-            android:textColor="#172033"
-            android:textSize="26sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:text="I'm here to help you organize your time and get things done. Here is what you can do with me:"
-            android:textColor="#64748B"
-            android:textSize="14sp" />
-
-        <!-- Fonctionnalités -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/bg_card"
-            android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="14dp">
+            app:layout_constraintGuide_percent="0.335" />
 
-            <TextView
-                android:layout_width="36dp"
-                android:layout_height="wrap_content"
-                android:text="⌂"
-                android:textColor="#2563EB"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+        <ImageView
+            android:id="@+id/welcomeLogo"
+            android:layout_width="218dp"
+            android:layout_height="47dp"
+            android:contentDescription="@string/logo_description"
+            android:scaleType="fitCenter"
+            android:src="@drawable/logo_nadhim"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/guideTop" />
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Today"
-                    android:textColor="#172033"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="See what is on your plan for today at a glance."
-                    android:textColor="#64748B"
-                    android:textSize="12sp" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/bg_card"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="14dp">
-
-            <TextView
-                android:layout_width="36dp"
-                android:layout_height="wrap_content"
-                android:text="▦"
-                android:textColor="#2563EB"
-                android:textSize="22sp"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Calendar"
-                    android:textColor="#172033"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="View your day, week or month and keep your events organized."
-                    android:textColor="#64748B"
-                    android:textSize="12sp" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/bg_card"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="14dp">
-
-            <TextView
-                android:layout_width="36dp"
-                android:layout_height="wrap_content"
-                android:text="+"
-                android:textColor="#2563EB"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Add"
-                    android:textColor="#172033"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="Describe a task, pick a deadline and tell me what you need to get done."
-                    android:textColor="#64748B"
-                    android:textSize="12sp" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/bg_card"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="14dp">
-
-            <TextView
-                android:layout_width="36dp"
-                android:layout_height="wrap_content"
-                android:text="◔"
-                android:textColor="#2563EB"
-                android:textSize="22sp"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Insights"
-                    android:textColor="#172033"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="Understand your productivity with your weekly activity and focus time."
-                    android:textColor="#64748B"
-                    android:textSize="12sp" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- Demande du prénom -->
         <TextView
+            android:id="@+id/welcomeTagline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:text="First, what should I call you?"
-            android:textColor="#172033"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/poppins_semibold"
+            android:text="Smart Task Planner"
+            android:textColor="@color/text_hint"
             android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <EditText
-            android:id="@+id/nameInput"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/bg_card"
-            android:hint="Your name"
-            android:inputType="textPersonName|textCapWords"
-            android:maxLines="1"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:singleLine="true"
-            android:textColor="#334155"
-            android:textColorHint="#94A3B8"
-            android:textSize="14sp" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/welcomeLogo" />
 
         <TextView
-            android:id="@+id/continueButton"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="16dp"
+            android:id="@+id/welcomeBtn"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="37dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="37dp"
+            android:background="@drawable/button_welcome"
             android:clickable="true"
             android:focusable="true"
+            android:fontFamily="@font/poppins_bold"
             android:gravity="center"
-            android:text="Let's get started"
-            android:textColor="#FFFFFF"
-            android:textSize="15sp"
-            android:textStyle="bold" />
-    </LinearLayout>
-</ScrollView>
+            android:text="Welcome !"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/welcomeTagline" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ImageButton
+        android:id="@+id/themeToggle"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="20dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/switch_to_dark_mode"
+        android:padding="10dp"
+        android:src="@drawable/ic_theme_moon"
+        android:tint="@color/theme_toggle_tint" />
+</FrameLayout>

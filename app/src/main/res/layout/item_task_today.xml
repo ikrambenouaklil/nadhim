@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/TaskCard">
+
+    <CheckBox
+        android:id="@+id/todayTaskCheck"
+        style="@style/TaskCheck" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/todayTaskTitle"
+            style="@style/Text.TaskTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/todayTaskTime"
+            style="@style/Text.TaskTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/todayTaskPriority"
+        style="@style/Text.Badge"
+        android:visibility="gone" />
+
+    <ImageButton
+        android:id="@+id/todayTaskEdit"
+        android:layout_width="32dp"
+        android:layout_height="40dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="Edit task"
+        android:padding="7dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_edit" />
+
+    <ImageButton
+        android:id="@+id/todayTaskDelete"
+        android:layout_width="32dp"
+        android:layout_height="40dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="Delete task"
+        android:padding="7dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_delete" />
+</LinearLayout>

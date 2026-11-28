@@ -5,13 +5,43 @@
     <color name="brand_blue">#0051FF</color>
     <color name="brand_blue_light">#719EFF</color>
     <color name="brand_blue_mid">#3977FF</color>
+    <color name="priority_high_start">#D52CFF</color>
+    <color name="priority_high_end">#B832F5</color>
     <color name="progress_track">#315FFF</color>
+    <color name="theme_toggle_tint">#3977FF</color>
 
     <!-- Accent green (progress bar fill, "LOW" badge) -->
     <color name="accent_green">#9DFF00</color>
+    <color name="text_hint">#94A3B8</color>
+    <color name="auth_link">#4D81E7</color>
+    <color name="card_text_primary">#17161B</color>
+    <color name="card_text_secondary">#667085</color>
+    <color name="chat_panel_background">@color/card_background</color>
+    <color name="chat_composer_background">@color/card_background</color>
+    <color name="chat_received_background">@color/suggestion_background</color>
+    <color name="chat_attachment_background">@color/brand_blue_pale</color>
+    <color name="chat_text_primary">@color/card_text_primary</color>
+    <color name="chat_text_secondary">@color/card_text_secondary</color>
+    <color name="chat_accent">@color/brand_blue</color>
+
+    <!-- Insights palette -->
+    <color name="insight_blue">@color/brand_blue</color>
+    <color name="insight_blue_light">@color/brand_blue_light</color>
+    <color name="insight_blue_mid">@color/brand_blue_mid</color>
+    <color name="insight_green">@color/accent_green</color>
+    <color name="insight_dark">#334155</color>
+    <color name="insight_muted">#64748B</color>
+    <color name="insight_track">#E2E8F0</color>
+    <color name="insight_focus_start">@color/brand_blue</color>
+    <color name="insight_focus_end">@color/brand_blue_light</color>
+    <color name="insight_focus_label">@color/accent_green</color>
+    <color name="brand_blue_pale">#EAF0FF</color>
+    <color name="brand_blue_border">#D9E4FF</color>
+    <color name="brand_green_pale">#E8FFB8</color>
 
     <!-- Backgrounds -->
     <color name="screen_background">#FAFFFE</color>
+    <color name="system_navigation_background">#FAFFFE</color>
     <color name="card_background">#FFFFFF</color>
     <color name="check_background">#F7FFFE</color>
     <color name="suggestion_background">#F2F5FF</color>

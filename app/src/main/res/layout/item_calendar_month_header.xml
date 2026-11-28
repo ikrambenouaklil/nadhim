@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+    <TextView style="@style/Text.CalendarWeekday" android:text="M" />
+    <TextView style="@style/Text.CalendarWeekday" android:text="T" />
+    <TextView style="@style/Text.CalendarWeekday" android:text="W" />
+    <TextView style="@style/Text.CalendarWeekday" android:text="T" />
+    <TextView style="@style/Text.CalendarWeekday" android:text="F" />
+    <TextView style="@style/Text.CalendarWeekday" android:text="S" />
+    <TextView style="@style/Text.CalendarWeekday" android:text="S" />
+</LinearLayout>

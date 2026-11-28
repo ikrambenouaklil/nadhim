@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="70dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="13dp"
+        android:background="@drawable/bg_bottom_nav"
+        android:orientation="horizontal"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp">
+
+        <LinearLayout
+            android:id="@+id/nav_today"
+            style="@style/NavItem"
+            android:contentDescription="@string/nav_today">
+
+            <TextView
+                style="@style/Text.NavIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nav_today_icon" />
+
+            <TextView
+                style="@style/Text.NavLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nav_today" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nav_calendar"
+            style="@style/NavItem"
+            android:contentDescription="@string/nav_calendar">
+
+            <TextView
+                style="@style/Text.NavIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nav_calendar_icon" />
+
+            <TextView
+                style="@style/Text.NavLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nav_calendar" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nav_add"
+            style="@style/NavItem"
+            android:contentDescription="@string/nav_add">
+
+            <TextView
+                style="@style/Text.NavIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nav_add_icon" />
+
+            <TextView
+                style="@style/Text.NavLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nav_add" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nav_insights"
+            style="@style/NavItem"
+            android:contentDescription="@string/nav_insights">
+
+            <TextView
+                style="@style/Text.NavIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nav_insights_icon" />
+
+            <TextView
+                style="@style/Text.NavLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nav_insights" />
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>
