@@ -30,21 +30,41 @@ public class TaskStore {
 
         // Each email gets its own key, keeping user task lists separate.
         String email = SessionManager.getEmail(context);
-        userTasksKey = email == null || email.trim().isEmpty()
+        String normalizedEmail = AccountStore.normalize(email);
+        migrateLegacyTaskKey(preferences, normalizedEmail);
+        userTasksKey = normalizedEmail.isEmpty()
                 ? null
-                : TASKS_KEY_PREFIX + email.trim();
+                : TASKS_KEY_PREFIX + normalizedEmail;
     }
 
     /** Moves this user's local task list to a new email key without overwriting another list. */
     public static boolean moveTasksToEmail(Context context, String oldEmail, String newEmail) {
-        String oldKey = TASKS_KEY_PREFIX + oldEmail.trim();
-        String newKey = TASKS_KEY_PREFIX + newEmail.trim();
-        if (oldKey.equals(newKey)) return true;
+        String oldKey = TASKS_KEY_PREFIX + AccountStore.normalize(oldEmail);
+        String newKey = TASKS_KEY_PREFIX + AccountStore.normalize(newEmail);
         SharedPreferences tasks = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
+        migrateLegacyTaskKey(tasks, AccountStore.normalize(oldEmail));
+        migrateLegacyTaskKey(tasks, AccountStore.normalize(newEmail));
+        if (oldKey.equals(newKey)) return true;
         if (!tasks.contains(oldKey)) return true;
         if (tasks.contains(newKey)) return false;
         return tasks.edit().putString(newKey, tasks.getString(oldKey, "[]"))
                 .remove(oldKey).commit();
+    }
+
+    /** Keeps task lists created with mixed-case email keys available after normalization. */
+    private static void migrateLegacyTaskKey(SharedPreferences tasks, String email) {
+        if (email == null || email.isEmpty()) return;
+        String normalizedKey = TASKS_KEY_PREFIX + AccountStore.normalize(email);
+        if (tasks.contains(normalizedKey)) return;
+
+        for (String storedKey : tasks.getAll().keySet()) {
+            if (!storedKey.startsWith(TASKS_KEY_PREFIX)) continue;
+            String storedEmail = storedKey.substring(TASKS_KEY_PREFIX.length());
+            if (!AccountStore.normalize(storedEmail).equals(AccountStore.normalize(email))) continue;
+            tasks.edit().putString(normalizedKey, tasks.getString(storedKey, "[]"))
+                    .remove(storedKey).commit();
+            return;
+        }
     }
 
     /** Returns the tasks saved for the currently signed-in user. */

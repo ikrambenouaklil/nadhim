@@ -1,7 +1,7 @@
 package com.example.myapplication.ui.auth;
 import com.example.myapplication.R;
 
-import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
@@ -9,7 +9,6 @@ import android.text.method.PasswordTransformationMethod;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
-import androidx.appcompat.app.AlertDialog;
 
 import com.example.myapplication.data.AccountStore;
 import com.example.myapplication.data.SessionManager;
@@ -65,7 +64,7 @@ public class LoginActivity extends NadhimActivity {
                 return;
             }
          // 1. check is the email exists
-            String e = email.getText().toString().trim();   // email
+            String e = AccountStore.normalize(email.getText().toString());
             String enteredPassword = password.getText().toString();// the password that the user entred
             AccountStore accounts = new AccountStore(this);
             String storedValue = accounts.getPasswordHash(e);

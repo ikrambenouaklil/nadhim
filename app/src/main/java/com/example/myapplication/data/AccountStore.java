@@ -3,6 +3,8 @@ package com.example.myapplication.data;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.Locale;
+
 /** Stores local accounts using the existing preference names and keys. */
 public final class AccountStore {
     private static final String PREFERENCES = "nadhim_accounts";
@@ -13,14 +15,17 @@ public final class AccountStore {
     }
 
     public boolean exists(String email) {
+        migrateLegacyEmail(email);
         return preferences.contains(key(email, "password"));
     }
 
     public String getPasswordHash(String email) {
+        migrateLegacyEmail(email);
         return preferences.getString(key(email, "password"), null);
     }
 
     public String getName(String email) {
+        migrateLegacyEmail(email);
         return preferences.getString(key(email, "name"), "");
     }
 
@@ -36,8 +41,8 @@ public final class AccountStore {
     }
 
     public boolean updateProfile(String currentEmail, String newEmail, String newName) {
-        String oldEmail = currentEmail.trim();
-        String updatedEmail = newEmail.trim();
+        String oldEmail = normalize(currentEmail);
+        String updatedEmail = normalize(newEmail);
         String passwordHash = getPasswordHash(oldEmail);
         if (passwordHash == null) return false;
         if (!oldEmail.equalsIgnoreCase(updatedEmail) && exists(updatedEmail)) return false;
@@ -56,6 +61,34 @@ public final class AccountStore {
     }
 
     private String key(String email, String field) {
-        return email.trim() + "." + field;
+        return normalize(email) + "." + field;
+    }
+
+    /** Migrates an account saved before email keys were normalized. */
+    private void migrateLegacyEmail(String email) {
+        String normalizedEmail = normalize(email);
+        String normalizedPasswordKey = key(normalizedEmail, "password");
+        if (normalizedEmail.isEmpty() || preferences.contains(normalizedPasswordKey)) return;
+
+        for (String storedKey : preferences.getAll().keySet()) {
+            if (!storedKey.endsWith(".password")) continue;
+            String storedEmail = storedKey.substring(0, storedKey.length() - ".password".length());
+            if (!normalize(storedEmail).equals(normalizedEmail)) continue;
+
+            String passwordHash = preferences.getString(storedKey, null);
+            String storedName = preferences.getString(storedEmail + ".name", "");
+            preferences.edit()
+                    .putString(normalizedPasswordKey, passwordHash)
+                    .putString(key(normalizedEmail, "name"), storedName)
+                    .remove(storedKey)
+                    .remove(storedEmail + ".name")
+                    .commit();
+            return;
+        }
+    }
+
+    /** Returns one stable representation for email keys and comparisons. */
+    public static String normalize(String email) {
+        return email == null ? "" : email.trim().toLowerCase(Locale.ROOT);
     }
 }

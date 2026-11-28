@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Deep brand-blue gradient for HIGH priority. -->
+<!-- Purple gradient for HIGH priority, matching the Figma priority cards. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <corners android:radius="14dp" />
+    <corners android:radius="18dp" />
     <gradient
-        android:type="radial"
-        android:gradientRadius="40dp"
-        android:startColor="@color/brand_blue"
-        android:centerColor="@color/brand_blue_mid"
-        android:endColor="@color/brand_blue_light" />
+        android:type="linear"
+        android:angle="0"
+        android:startColor="@color/priority_high_start"
+        android:endColor="@color/priority_high_end" />
 </shape>

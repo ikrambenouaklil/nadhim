@@ -1,7 +1,6 @@
 package com.example.myapplication.ui.auth;
 import com.example.myapplication.R;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
@@ -53,7 +52,7 @@ public class RegisterActivity extends NadhimActivity {
                 Toast.makeText(this, "Complete all fields", Toast.LENGTH_SHORT).show();
                 return;
             }
-            String e = email.getText().toString().trim();
+            String e = AccountStore.normalize(email.getText().toString());
             AccountStore accounts = new AccountStore(this);
             if (accounts.exists(e)) {
                 Toast.makeText(this, "user already exists ", Toast.LENGTH_SHORT).show();

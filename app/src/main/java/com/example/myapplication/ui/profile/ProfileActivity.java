@@ -85,8 +85,8 @@ public class ProfileActivity extends NadhimActivity {
 
     private void saveProfile() {
         String name = nameInput.getText().toString().trim();
-        String oldEmail = SessionManager.getEmail(this).trim();
-        String newEmail = emailInput.getText().toString().trim();
+        String oldEmail = AccountStore.normalize(SessionManager.getEmail(this));
+        String newEmail = AccountStore.normalize(emailInput.getText().toString());
         if (name.isEmpty()) {
             nameInput.setError("Enter your name");
             nameInput.requestFocus();
