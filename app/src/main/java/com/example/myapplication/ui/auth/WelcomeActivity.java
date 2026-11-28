@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.example.myapplication.data.AccountStore;
 import com.example.myapplication.data.SessionManager;
 import com.example.myapplication.ui.NadhimActivity;
+import com.example.myapplication.ui.theme.ThemeManager;
 
 public class WelcomeActivity extends NadhimActivity {
 
@@ -33,6 +34,7 @@ public class WelcomeActivity extends NadhimActivity {
 
         // 3. No account exists: show Welcome screen
         setContentView(R.layout.activity_welcome);
+        ThemeManager.bindToggle(this);
 
         TextView welcomeButton = findViewById(R.id.welcomeBtn);
 

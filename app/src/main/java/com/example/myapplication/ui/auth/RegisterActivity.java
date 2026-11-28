@@ -15,6 +15,7 @@ import com.example.myapplication.data.SessionManager;
 import com.example.myapplication.util.PasswordHasher;
 import com.example.myapplication.ui.main.MainActivity;
 import com.example.myapplication.ui.NadhimActivity;
+import com.example.myapplication.ui.theme.ThemeManager;
 
 public class RegisterActivity extends NadhimActivity {
 
@@ -23,6 +24,7 @@ public class RegisterActivity extends NadhimActivity {
         super.onCreate(savedInstanceState);
         // we will work only on this interface
         setContentView(R.layout.activity_register);
+        ThemeManager.bindToggle(this);
 
         EditText name = findViewById(R.id.registerName);
         EditText email = findViewById(R.id.registerEmail);

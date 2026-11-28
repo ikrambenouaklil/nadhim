@@ -4,8 +4,10 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.widget.EditText;
-import android.widget.Switch;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,7 +47,9 @@ public class ProfileActivity extends NadhimActivity {
         currentEmail = findViewById(R.id.profileCurrentEmail);
 
         showCurrentProfile();
-        setupDarkModeSwitch();
+        bindPasswordVisibility(currentPasswordInput, findViewById(R.id.toggleCurrentPassword));
+        bindPasswordVisibility(newPasswordInput, findViewById(R.id.toggleNewPassword));
+        bindPasswordVisibility(confirmPasswordInput, findViewById(R.id.toggleConfirmPassword));
         findViewById(R.id.profileBackButton).setOnClickListener(v -> finish());
         findViewById(R.id.saveProfileButton).setOnClickListener(v -> saveProfile());
         findViewById(R.id.updatePasswordButton).setOnClickListener(v -> updatePassword());
@@ -62,13 +66,20 @@ public class ProfileActivity extends NadhimActivity {
         avatar.setText(name.isEmpty() ? "" : name.substring(0, 1).toUpperCase(Locale.ENGLISH));
     }
 
-    private void setupDarkModeSwitch() {
-        Switch darkModeSwitch = findViewById(R.id.profileDarkModeSwitch);
-        darkModeSwitch.setChecked(SessionManager.isDarkMode(this));
-        darkModeSwitch.setOnCheckedChangeListener((button, dark) -> {
-            if (dark == SessionManager.isDarkMode(this)) return;
-            SessionManager.setDarkMode(this, dark);
-            recreate();
+    private void bindPasswordVisibility(EditText password, ImageButton toggle) {
+        toggle.setOnClickListener(view -> {
+            int cursor = password.getSelectionStart();
+            boolean hidden = password.getTransformationMethod() instanceof PasswordTransformationMethod;
+            if (hidden) {
+                password.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                toggle.setImageResource(R.drawable.ic_visibility);
+                toggle.setContentDescription(getString(R.string.hide_password));
+            } else {
+                password.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                toggle.setImageResource(R.drawable.ic_visibility_off);
+                toggle.setContentDescription(getString(R.string.show_password));
+            }
+            password.setSelection(Math.max(cursor, 0));
         });
     }
 

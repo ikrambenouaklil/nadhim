@@ -57,6 +57,19 @@
                 android:text=""
                 android:textColor="@color/white"
                 android:textSize="14sp" />
+
+            <ImageButton
+                android:id="@+id/themeToggle"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="48dp"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/switch_to_dark_mode"
+                android:padding="10dp"
+                android:src="@drawable/ic_theme_moon"
+                android:tint="@color/theme_toggle_tint" />
         </RelativeLayout>
 
         <!-- Thin horizontal line under the header. A plain View with a

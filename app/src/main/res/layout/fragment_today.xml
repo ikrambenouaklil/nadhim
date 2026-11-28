@@ -163,6 +163,7 @@
                     android:layout_marginTop="8dp"
                     android:fontFamily="@font/poppins_semibold"
                     android:text="@string/suggestion_title"
+                    android:textColor="@color/card_text_primary"
                     android:textSize="13sp" />
 
                 <TextView
@@ -172,7 +173,7 @@
                     android:layout_marginTop="6dp"
                     android:lineSpacingExtra="2dp"
                     android:text="@string/suggestion_body"
-                    android:textColor="@color/text_secondary"
+                    android:textColor="@color/card_text_secondary"
                     android:textSize="10sp" />
             </LinearLayout>
         </LinearLayout>

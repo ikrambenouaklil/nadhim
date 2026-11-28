@@ -56,7 +56,7 @@
                     android:id="@+id/reviewTaskTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/text_primary"
+                    android:textColor="@color/card_text_primary"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -65,7 +65,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:textColor="@color/text_secondary"
+                    android:textColor="@color/card_text_secondary"
                     android:textSize="14sp" />
 
                 <TextView
@@ -73,7 +73,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:textColor="@color/text_secondary"
+                    android:textColor="@color/card_text_secondary"
                     android:textSize="14sp" />
 
                 <TextView
@@ -81,7 +81,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:textColor="@color/text_secondary"
+                    android:textColor="@color/card_text_secondary"
                     android:textSize="14sp" />
 
                 <TextView
@@ -89,7 +89,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:textColor="@color/text_secondary"
+                    android:textColor="@color/card_text_secondary"
                     android:textSize="14sp" />
 
                 <TextView
@@ -97,7 +97,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:textColor="@color/text_secondary"
+                    android:textColor="@color/card_text_secondary"
                     android:textSize="13sp" />
             </LinearLayout>
 
@@ -122,7 +122,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="AI scheduling is not connected yet. Your date, time, duration and priority are unchanged."
-                    android:textColor="@color/text_primary"
+                    android:textColor="@color/card_text_primary"
                     android:textSize="13sp" />
             </LinearLayout>
 
@@ -150,7 +150,7 @@
                 android:focusable="true"
                 android:gravity="center"
                 android:text="Keep my original settings"
-                android:textColor="@color/text_primary"
+                android:textColor="@color/card_text_primary"
                 android:textSize="13sp"
                 android:textStyle="bold" />
 

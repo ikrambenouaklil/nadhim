@@ -76,6 +76,7 @@ public class MainActivity extends NadhimActivity {
                 showTab(0);
             }
         }
+        ThemeManager.bindToggle(this);
     }
 
     @Override
@@ -190,7 +191,7 @@ public class MainActivity extends NadhimActivity {
                 if (childView instanceof TextView) {
                     ((TextView) childView).setTextColor(selected
                             ? getColor(R.color.brand_blue)
-                            : getColor(R.color.text_secondary));
+                            : getColor(R.color.card_text_secondary));
                 }
             }
         }

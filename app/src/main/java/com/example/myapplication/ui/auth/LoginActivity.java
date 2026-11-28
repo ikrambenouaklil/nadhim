@@ -16,6 +16,7 @@ import com.example.myapplication.data.SessionManager;
 import com.example.myapplication.util.PasswordHasher;
 import com.example.myapplication.ui.main.MainActivity;
 import com.example.myapplication.ui.NadhimActivity;
+import com.example.myapplication.ui.theme.ThemeManager;
 
 public class LoginActivity extends NadhimActivity {
 
@@ -24,6 +25,7 @@ public class LoginActivity extends NadhimActivity {
         super.onCreate(savedInstanceState);
         // use the login interface
         setContentView(R.layout.activity_login);
+        ThemeManager.bindToggle(this);
 
         EditText email = findViewById(R.id.loginEmail);
         EditText password = findViewById(R.id.loginPassword);

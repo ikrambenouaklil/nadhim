@@ -176,7 +176,7 @@ public class CalendarFragment extends Fragment {
         for (int i = 0; i < tabs.length; i++) {
             boolean selected = i == mode;
             tabs[i].setBackgroundResource(selected ? R.drawable.bg_calendar_tab_selected : 0);
-            tabs[i].setTextColor(selected ? Color.WHITE : MUTED);
+            tabs[i].setTextColor(selected ? Color.WHITE : getActivity().getColor(R.color.card_text_secondary));
             tabs[i].setTypeface(null, selected ? Typeface.BOLD : Typeface.NORMAL);
         }
     }
@@ -225,11 +225,12 @@ public class CalendarFragment extends Fragment {
         View dot = cell.findViewById(R.id.calendarDayDot);
         weekday.setVisibility(showWeekday ? View.VISIBLE : View.GONE);
         weekday.setText(fmt("EEE", date));
-        weekday.setTextColor(selected ? Color.WHITE : MUTED);
+        weekday.setTextColor(selected ? Color.WHITE : getActivity().getColor(R.color.card_text_secondary));
         number.setText(String.valueOf(date.get(java.util.Calendar.DAY_OF_MONTH)));
-        number.setTextColor(selected ? Color.WHITE : (inMonth ? DARK : FADED));
+        number.setTextColor(selected ? Color.WHITE : (inMonth
+                ? getActivity().getColor(R.color.card_text_primary) : FADED));
         cell.setBackgroundResource(selected ? R.drawable.bg_calendar_day_selected
-                : today ? R.drawable.bg_calendar_day_today : 0);
+                : today ? R.drawable.bg_calendar_day_today : R.drawable.bg_card);
         dot.setBackgroundResource(selected ? R.drawable.bg_calendar_dot_selected : R.drawable.bg_calendar_dot);
         dot.setVisibility(hasEvents ? View.VISIBLE : View.INVISIBLE);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, UiUtils.dp(getActivity(), heightDp), 1);
@@ -305,7 +306,8 @@ public class CalendarFragment extends Fragment {
         checkBox.setChecked(task.done);
         time.setText(DateUtils.formatTime(task.minutes));
         title.setText(task.title);
-        title.setTextColor(task.done ? MUTED : DARK);
+        title.setTextColor(task.done ? getActivity().getColor(R.color.card_text_secondary)
+                : getActivity().getColor(R.color.card_text_primary));
         if (task.done) title.setPaintFlags(title.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
         details.setText(DateUtils.formatTime(task.minutes) + " – " + DateUtils.formatTime(task.minutes + task.duration)
                 + "  ·  " + DateUtils.formatDuration(task.duration));
@@ -329,7 +331,8 @@ public class CalendarFragment extends Fragment {
                 Toast.makeText(getActivity(), "Could not save task status", Toast.LENGTH_SHORT).show();
                 return;
             }
-            title.setTextColor(checked ? MUTED : DARK);
+            title.setTextColor(checked ? getActivity().getColor(R.color.card_text_secondary)
+                    : getActivity().getColor(R.color.card_text_primary));
             title.setPaintFlags(checked
                     ? title.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
                     : title.getPaintFlags() & ~android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);

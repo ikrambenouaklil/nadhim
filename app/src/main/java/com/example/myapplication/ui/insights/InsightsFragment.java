@@ -53,7 +53,7 @@ public class InsightsFragment extends Fragment {
         BLUE = getActivity().getColor(R.color.insight_blue);
         BLUE_MID = getActivity().getColor(R.color.insight_blue_mid);
         GREEN = getActivity().getColor(R.color.insight_green);
-        DARK = getActivity().getColor(R.color.insight_dark);
+        DARK = getActivity().getColor(R.color.card_text_primary);
         MUTED = getActivity().getColor(R.color.insight_muted);
         TRACK = getActivity().getColor(R.color.insight_track);
         priorityColors = new int[]{BLUE, BLUE_MID, GREEN, MUTED};

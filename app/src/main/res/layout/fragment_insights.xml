@@ -69,7 +69,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Done this week"
-                        android:textColor="@color/insight_muted"
+                        android:textColor="@color/card_text_secondary"
                         android:textSize="11sp" />
                 </LinearLayout>
 
@@ -97,7 +97,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Completion rate"
-                        android:textColor="@color/insight_muted"
+                        android:textColor="@color/card_text_secondary"
                         android:textSize="11sp" />
                 </LinearLayout>
 
@@ -124,7 +124,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Est. hours done"
-                        android:textColor="@color/insight_muted"
+                        android:textColor="@color/card_text_secondary"
                         android:textSize="11sp" />
                 </LinearLayout>
             </LinearLayout>

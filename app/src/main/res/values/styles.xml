@@ -25,11 +25,12 @@
     <style name="Text.TaskTitle">
         <item name="android:fontFamily">@font/poppins_semibold</item>
         <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/card_text_primary</item>
     </style>
 
     <!-- Small grey text under a task title -->
     <style name="Text.TaskTime">
-        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textColor">@color/card_text_secondary</item>
         <item name="android:textSize">9sp</item>
         <item name="android:layout_marginTop">6dp</item>
     </style>
@@ -49,7 +50,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingTop">12dp</item>
         <item name="android:paddingBottom">2dp</item>
-        <item name="android:textColor">@color/insight_dark</item>
+        <item name="android:textColor">@color/card_text_secondary</item>
         <item name="android:textSize">13sp</item>
         <item name="android:textStyle">bold</item>
     </style>
@@ -59,7 +60,7 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:paddingStart">12dp</item>
         <item name="android:paddingEnd">12dp</item>
-        <item name="android:textColor">@color/insight_dark</item>
+        <item name="android:textColor">@color/card_text_primary</item>
         <item name="android:textSize">14sp</item>
     </style>
 
@@ -112,14 +113,14 @@
     <style name="Text.NavIcon">
         <item name="android:fontFamily">@font/poppins_bold</item>
         <item name="android:textSize">17sp</item>
-        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textColor">@color/card_text_secondary</item>
         <item name="android:gravity">center</item>
     </style>
 
     <style name="Text.NavLabel">
         <item name="android:fontFamily">@font/poppins_semibold</item>
         <item name="android:textSize">9sp</item>
-        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textColor">@color/card_text_secondary</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_marginTop">2dp</item>
     </style>

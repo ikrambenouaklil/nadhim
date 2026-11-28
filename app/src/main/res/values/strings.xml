@@ -2,6 +2,8 @@
      directly in the layout) makes it easy to translate the app later,
      for example by adding a values-fr/strings.xml file. -->
 <resources>
+    <string name="switch_to_dark_mode">Switch to dark mode</string>
+    <string name="switch_to_light_mode">Switch to light mode</string>
     <string name="app_name">Nadhim</string>
 
     <!-- Header -->

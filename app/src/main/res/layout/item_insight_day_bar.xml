@@ -4,10 +4,10 @@
     android:gravity="bottom|center_horizontal" android:orientation="vertical">
     <TextView android:id="@+id/insightDayCount" android:layout_width="wrap_content"
         android:layout_height="wrap_content" android:gravity="center" android:textSize="10sp"
-        android:textColor="@color/insight_dark" />
+        android:textColor="@color/card_text_primary" />
     <View android:id="@+id/insightDayBar" android:layout_width="16dp" android:layout_height="4dp"
         android:layout_marginTop="4dp" android:background="@drawable/bg_insights_bar" />
     <TextView android:id="@+id/insightDayLabel" android:layout_width="wrap_content"
         android:layout_height="wrap_content" android:layout_marginTop="6dp"
-        android:gravity="center" android:textSize="10sp" android:textColor="@color/insight_muted" />
+        android:gravity="center" android:textSize="10sp" android:textColor="@color/card_text_secondary" />
 </LinearLayout>

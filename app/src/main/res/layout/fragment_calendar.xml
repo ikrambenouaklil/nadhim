@@ -181,7 +181,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="7dp"
                     android:text="Leave a little space between tasks so your schedule stays flexible. AI suggestions will be available later."
-                    android:textColor="@color/text_secondary"
+                    android:textColor="@color/card_text_secondary"
                     android:textSize="12sp" />
             </LinearLayout>
         </LinearLayout>

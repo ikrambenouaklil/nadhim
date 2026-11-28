@@ -186,10 +186,10 @@ public class TodayFragment extends Fragment {
     private void updateTitleStyle(TextView title, boolean done) {
         if (done) {
             title.setPaintFlags(title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            title.setTextColor(getActivity().getColor(R.color.text_secondary));
+            title.setTextColor(getActivity().getColor(R.color.card_text_secondary));
         } else {
             title.setPaintFlags(title.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
-            title.setTextColor(getActivity().getColor(R.color.text_primary));
+            title.setTextColor(getActivity().getColor(R.color.card_text_primary));
         }
     }
 

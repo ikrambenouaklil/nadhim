@@ -9,14 +9,14 @@
         android:id="@+id/calendarDayWeekday"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/insight_muted"
+        android:textColor="@color/card_text_secondary"
         android:textSize="10sp"
         android:visibility="gone" />
     <TextView
         android:id="@+id/calendarDayNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/insight_dark"
+        android:textColor="@color/card_text_primary"
         android:textSize="14sp"
         android:textStyle="bold" />
     <View

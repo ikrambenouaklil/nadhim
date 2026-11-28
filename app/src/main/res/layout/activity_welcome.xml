@@ -71,4 +71,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/welcomeTagline" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ImageButton
+        android:id="@+id/themeToggle"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="20dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/switch_to_dark_mode"
+        android:padding="10dp"
+        android:src="@drawable/ic_theme_moon"
+        android:tint="@color/theme_toggle_tint" />
 </FrameLayout>

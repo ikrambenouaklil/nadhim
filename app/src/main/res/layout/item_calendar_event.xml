@@ -56,14 +56,14 @@
                 android:id="@+id/calendarEventTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/insight_dark"
+                android:textColor="@color/card_text_primary"
                 android:textSize="13sp"
                 android:textStyle="bold" />
             <TextView
                 android:id="@+id/calendarEventDetails"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/insight_muted"
+                android:textColor="@color/card_text_secondary"
                 android:textSize="10sp" />
         </LinearLayout>
 

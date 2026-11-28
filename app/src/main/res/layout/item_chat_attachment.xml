@@ -10,8 +10,8 @@
         android:gravity="center" android:text="▤" android:textSize="22sp" android:textColor="@color/brand_blue" />
     <TextView android:id="@+id/chatAttachmentName" android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:layout_marginStart="9dp" android:maxWidth="190dp" android:maxLines="2"
-        android:ellipsize="end" android:textSize="13sp" android:textColor="@color/insight_dark" android:textStyle="bold" />
+        android:ellipsize="end" android:textSize="13sp" android:textColor="@color/card_text_primary" android:textStyle="bold" />
     <TextView android:id="@+id/chatAttachmentRemove" android:layout_width="28dp" android:layout_height="42dp"
         android:layout_marginStart="6dp" android:gravity="center" android:text="×" android:textSize="22sp"
-        android:textColor="@color/insight_muted" android:visibility="gone" />
+        android:textColor="@color/card_text_secondary" android:visibility="gone" />
 </LinearLayout>

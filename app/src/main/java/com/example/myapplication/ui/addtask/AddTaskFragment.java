@@ -54,7 +54,7 @@ public class AddTaskFragment extends Fragment {
         contentView = inflater.inflate(R.layout.fragment_add_task, container, false);
         BLUE = getActivity().getColor(R.color.brand_blue);
         BLUE_CHIP = getActivity().getColor(R.color.brand_blue_pale);
-        DARK = getActivity().getColor(R.color.text_primary);
+        DARK = getActivity().getColor(R.color.card_text_primary);
         bindViews();
         setupDeadlinePickers();
         setupPriority();
@@ -222,9 +222,9 @@ public class AddTaskFragment extends Fragment {
         dateSet = false;
         timeSet = false;
         dateText.setText("Select date");
-        dateText.setTextColor(getActivity().getColor(R.color.text_hint));
+        dateText.setTextColor(getActivity().getColor(R.color.card_text_secondary));
         timeText.setText("Select time");
-        timeText.setTextColor(getActivity().getColor(R.color.text_hint));
+        timeText.setTextColor(getActivity().getColor(R.color.card_text_secondary));
         duration = 30;
         updateDurationText();
         selectPriority(Priority.MEDIUM);
