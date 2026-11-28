@@ -177,9 +177,13 @@ public class TodayFragment extends Fragment {
             badge.setBackgroundResource(R.drawable.bg_badge_high);
         } else if (priority == Priority.LOW) {
             badge.setBackgroundResource(R.drawable.bg_badge_low);
-            badge.setTextColor(getActivity().getColor(R.color.text_primary));
+            badge.setTextColor(getActivity().getColor(R.color.card_text_primary));
         } else {
             badge.setBackgroundResource(R.drawable.bg_badge_med);
+            badge.setTextColor(getActivity().getColor(R.color.white));
+        }
+        if (priority == Priority.HIGH) {
+            badge.setTextColor(getActivity().getColor(R.color.white));
         }
     }
 

@@ -30,8 +30,6 @@ import java.util.Locale;
 public class AddTaskFragment extends Fragment {
     private static final int REQUEST_REVIEW = 51;
     private static final String EXTRA_TASK = "review_task";
-    private int BLUE;
-    private int BLUE_CHIP;
     private int DARK;
 
     private View contentView;
@@ -52,8 +50,6 @@ public class AddTaskFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         contentView = inflater.inflate(R.layout.fragment_add_task, container, false);
-        BLUE = getActivity().getColor(R.color.brand_blue);
-        BLUE_CHIP = getActivity().getColor(R.color.brand_blue_pale);
         DARK = getActivity().getColor(R.color.card_text_primary);
         bindViews();
         setupDeadlinePickers();
@@ -119,9 +115,9 @@ public class AddTaskFragment extends Fragment {
 
     private void selectPriority(Priority value) {
         priority = value;
-        styleChip(priorityLow, value == Priority.LOW);
-        styleChip(priorityMedium, value == Priority.MEDIUM);
-        styleChip(priorityHigh, value == Priority.HIGH);
+        styleChip(priorityLow, Priority.LOW, value == Priority.LOW);
+        styleChip(priorityMedium, Priority.MEDIUM, value == Priority.MEDIUM);
+        styleChip(priorityHigh, Priority.HIGH, value == Priority.HIGH);
     }
 
     private void setupDurationPicker() {
@@ -160,10 +156,20 @@ public class AddTaskFragment extends Fragment {
         durationText.setTextColor(DARK);
     }
 
-    private void styleChip(TextView chip, boolean selected) {
-        chip.setBackgroundResource(selected ? R.drawable.bg_priority_chip_selected
-                : R.drawable.bg_priority_chip_unselected);
-        chip.setTextColor(selected ? BLUE : DARK);
+    private void styleChip(TextView chip, Priority value, boolean selected) {
+        if (!selected) {
+            chip.setBackgroundResource(R.drawable.bg_priority_chip_unselected);
+            chip.setTextColor(DARK);
+        } else if (value == Priority.HIGH) {
+            chip.setBackgroundResource(R.drawable.bg_badge_high);
+            chip.setTextColor(getActivity().getColor(R.color.white));
+        } else if (value == Priority.MEDIUM) {
+            chip.setBackgroundResource(R.drawable.bg_badge_med);
+            chip.setTextColor(getActivity().getColor(R.color.white));
+        } else {
+            chip.setBackgroundResource(R.drawable.bg_badge_low);
+            chip.setTextColor(DARK);
+        }
         chip.setTypeface(null, selected ? Typeface.BOLD : Typeface.NORMAL);
     }
 

@@ -5,6 +5,8 @@
     <color name="brand_blue">#0051FF</color>
     <color name="brand_blue_light">#719EFF</color>
     <color name="brand_blue_mid">#3977FF</color>
+    <color name="priority_high_start">#D52CFF</color>
+    <color name="priority_high_end">#B832F5</color>
     <color name="progress_track">#315FFF</color>
     <color name="theme_toggle_tint">#3977FF</color>
 
